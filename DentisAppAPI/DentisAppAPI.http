@@ -1,0 +1,6 @@
+@DentisAppAPI_HostAddress = http://localhost:5133
+
+GET {{DentisAppAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

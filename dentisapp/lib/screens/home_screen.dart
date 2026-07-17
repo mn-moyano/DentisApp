@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import 'pacientes_screen.dart';
-import 'odontologos_screen.dart';
-import 'citas_screen.dart';
-import 'tratamientos_screen.dart';
-import 'pagos_screen.dart';
-import 'reportes_screen.dart';
+import 'pacientes/pacientes_screen.dart';
+import 'odontologos/odontologos_screen.dart';
+import 'citas/citas_screen.dart';
+import 'tratamientos/tratamientos_screen.dart';
+import 'pagos/pagos_screen.dart';
+import 'reportes/reportes_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
