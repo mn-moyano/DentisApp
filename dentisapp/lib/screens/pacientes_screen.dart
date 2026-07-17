@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'nuevo_paciente_screen.dart';
+import 'editar_paciente_screen.dart';
 
 class PacientesScreen extends StatelessWidget {
   const PacientesScreen({super.key});
@@ -7,18 +8,35 @@ class PacientesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final pacientes = [
-      {'nombre': 'Juan Pérez',
+      {'id_paciente': 1,
+        'nombres': 'Juan', 
+      'apellidos': 'Pérez',
       'cedula': '1234567890',
-      'telefono': '555-1234'},
-      {'nombre': 'María Gómez',
+      'fechaNacimiento': '1990-01-01',
+      'telefono': '555-1234',
+      'correo': 'juan.perez@example.com',
+      'direccion': 'Calle Falsa 123'},
+      {'id_paciente': 2,
+        'nombres': 'María', 'apellidos': 'Gómez',
       'cedula': '0987654321',
-      'telefono': '555-5678'},
-      {'nombre': 'Carlos Rodríguez',
+      'fechaNacimiento': '1985-05-15',
+      'telefono': '555-5678',
+      'correo': 'maria.gomez@example.com',
+      'direccion': 'Avenida Principal 456'},
+      {'id_paciente': 3,
+        'nombres': 'Carlos', 'apellidos': 'Rodríguez',
       'cedula': '1122334455',
-      'telefono': '555-9012'},
-      {'nombre': 'Ana Martínez',
+      'fechaNacimiento': '1995-12-10',
+      'telefono': '555-9012',
+      'correo': 'carlos.rodriguez@example.com',
+      'direccion': 'Calle Principal 789'},
+      {'id_paciente': 4,
+        'nombres': 'Ana', 'apellidos': 'Martínez',
       'cedula': '5544332211',
-      'telefono': '555-3456'},
+      'fechaNacimiento': '1988-08-20',
+      'telefono': '555-3456',
+      'correo': 'ana.martinez@example.com',
+      'direccion': 'Avenida Secundaria 101'},
     ];
 
     return Scaffold(
@@ -56,18 +74,20 @@ class PacientesScreen extends StatelessWidget {
                   child: ListTile(
                     leading: CircleAvatar(
                       child: Text(
-                        paciente['nombre']![0],
+                        paciente['nombres'].toString()[0],
+                      ),
                     ),
-                  ),
                     
-                  title: Text(
-                    paciente['nombre']!,
-                  ),
-
-                  subtitle: Text(
-                    'Cédula: ${paciente['cedula']}\n'
-                    'Teléfono: ${paciente['telefono']}',
-                  ),
+                    title: Text(
+                      '${paciente['nombres']} ${paciente['apellidos']}',
+                    ),
+                    
+                    subtitle: Text(
+                      'Cédula: ${paciente['cedula']}\n'
+                      'Teléfono: ${paciente['telefono']}\n'
+                      'Correo: ${paciente['correo']}\n'
+                      'Dirección: ${paciente['direccion']}',
+                    ),
 
                   isThreeLine: true,
 
@@ -75,7 +95,16 @@ class PacientesScreen extends StatelessWidget {
                     Icons.arrow_forward_ios,
                   ),
                   
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditarPacienteScreen(
+                          paciente: paciente,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               );
             },

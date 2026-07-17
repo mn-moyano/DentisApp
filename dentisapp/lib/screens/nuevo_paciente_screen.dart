@@ -16,6 +16,15 @@ class NuevoPacienteScreen extends StatelessWidget {
 
             TextField(
               decoration: InputDecoration(
+                labelText: 'ID del paciente',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: 15.0),
+
+            TextField(
+              decoration: InputDecoration(
                 labelText: 'Nombres',
                 border: OutlineInputBorder(),
               ),
@@ -68,6 +77,15 @@ class NuevoPacienteScreen extends StatelessWidget {
 
             SizedBox(height: 30.0),
 
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Dirección',
+                border: OutlineInputBorder(),
+              ),
+            ),
+
+            SizedBox(height: 30.0),
+            
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(context); // Regresa a la pantalla anterior
