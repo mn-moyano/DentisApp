@@ -8,7 +8,7 @@ class Paciente {
   final String? correo;
   final String? direccion;
 
-Paciente({
+  Paciente({
     this.idPaciente,
     required this.nombre,
     required this.apellido,
@@ -19,33 +19,33 @@ Paciente({
     this.direccion,
   });
 
-  /// Convierte un objeto Paciente a Map
   Map<String, dynamic> toMap() {
     return {
-      'id_paciente': idPaciente,
+      'idPaciente': idPaciente,
       'nombre': nombre,
       'apellido': apellido,
       'cedula': cedula,
-      'fecha_nacimiento': fechaNacimiento?.toIso8601String(),
+      'fechaNacimiento': fechaNacimiento?.toIso8601String(),
       'telefono': telefono,
       'direccion': direccion,
       'correo': correo,
     };
   }
 
-  /// Crea un objeto Paciente desde un Map
   factory Paciente.fromMap(Map<String, dynamic> map) {
     return Paciente(
-      idPaciente: map['id_paciente'],
-      nombre: map['nombre'],
-      apellido: map['apellido'],
-      cedula: map['cedula'],
-      fechaNacimiento: map['fecha_nacimiento'] != null
-          ? DateTime.parse(map['fecha_nacimiento'])
-          : null,
-      telefono: map['telefono'],
-      direccion: map['direccion'],
-      correo: map['correo'],
+      idPaciente: map['idPaciente'] ?? map['id_paciente'],
+      nombre: map['nombre']?.toString() ?? '',
+      apellido: map['apellido']?.toString() ?? '',
+      cedula: map['cedula']?.toString() ?? '',
+      fechaNacimiento: map['fechaNacimiento'] != null
+          ? DateTime.parse(map['fechaNacimiento'].toString())
+          : (map['fecha_nacimiento'] != null
+              ? DateTime.parse(map['fecha_nacimiento'].toString())
+              : null),
+      telefono: map['telefono']?.toString(),
+      direccion: map['direccion']?.toString(),
+      correo: map['correo']?.toString(),
     );
   }
 }
