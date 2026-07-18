@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
+import '../../models/paciente.dart';
 
 class EditarPacienteScreen extends StatelessWidget {
-  final Map<String, dynamic> paciente;
+  final Paciente paciente;
   
   const EditarPacienteScreen({super.key, required this.paciente});
 
   @override
   Widget build(BuildContext context) {
     
-    final idPacienteController = TextEditingController(text: paciente['idPaciente'].toString());
+    final idPacienteController = TextEditingController(text: paciente.idPaciente.toString());
 
-    final nombresController = TextEditingController(text: paciente['nombres']);
+    final nombresController = TextEditingController(text: paciente.nombre);
 
-    final apellidosController = TextEditingController(text: paciente['apellidos']);
+    final apellidosController = TextEditingController(text: paciente.apellido);
 
-    final cedulaController = TextEditingController(text: paciente['cedula']);
+    final cedulaController = TextEditingController(text: paciente.cedula);
 
-    final fechaNacimientoController = TextEditingController(text: paciente['fechaNacimiento']);
+    final fechaNacimientoController = TextEditingController(text: paciente.fechaNacimiento?.toString().split(' ') [0] ?? '',);
 
-    final telefonoController = TextEditingController(text: paciente['telefono']);
+    final telefonoController = TextEditingController(text: paciente.telefono ?? '');
 
-    final correoController = TextEditingController(text: paciente['correo']);
+    final correoController = TextEditingController(text: paciente.correo ?? '');
 
-    final direccionController = TextEditingController(text: paciente['direccion']);
+    final direccionController = TextEditingController(text: paciente.direccion ?? '');
 
     return Scaffold(
       appBar: AppBar(

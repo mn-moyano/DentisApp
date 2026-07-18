@@ -1,7 +1,19 @@
 import 'package:flutter/material.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_date_picker.dart';
+import '../../widgets/custom_textfield.dart';
 
 class NuevoPacienteScreen extends StatelessWidget {
-  const NuevoPacienteScreen({super.key});
+  NuevoPacienteScreen({super.key});
+
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController apellidoController = TextEditingController();
+  final TextEditingController cedulaController = TextEditingController();
+  final TextEditingController fechaNacimientoController =
+      TextEditingController();
+  final TextEditingController telefonoController = TextEditingController();
+  final TextEditingController correoController = TextEditingController();
+  final TextEditingController direccionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -10,88 +22,60 @@ class NuevoPacienteScreen extends StatelessWidget {
         title: const Text('Nuevo Paciente'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
 
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'ID del paciente',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: nombreController,
+              label: 'Nombres',
             ),
 
-            SizedBox(height: 15.0),
-
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Nombres',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            
-            SizedBox(height: 15.0),
-
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Apellidos',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: apellidoController,
+              label: 'Apellidos',
             ),
 
-            SizedBox(height: 15.0),
-
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Cédula',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: cedulaController,
+              label: 'Cédula',
+              keyboardType: TextInputType.number,
             ),
 
-            SizedBox(height: 15.0),
-
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Fecha de nacimiento',
-                border: OutlineInputBorder(),
-              ),
+            CustomDatePicker(
+              controller: fechaNacimientoController,
+              label: 'Fecha de nacimiento',
             ),
 
-            SizedBox(height: 15.0),
-
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Teléfono',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: telefonoController,
+              label: 'Teléfono',
+              keyboardType: TextInputType.phone,
             ),
 
-            SizedBox(height: 15.0),
-
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Correo electrónico',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: correoController,
+              label: 'Correo electrónico',
+              keyboardType: TextInputType.emailAddress,
             ),
 
-            SizedBox(height: 30.0),
-
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Dirección',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: direccionController,
+              label: 'Dirección',
             ),
 
-            SizedBox(height: 30.0),
-            
-            ElevatedButton(
+            const SizedBox(height: 20),
+
+            CustomButton(
+              texto: 'Guardar Paciente',
+              icono: Icons.save,
               onPressed: () {
-                Navigator.pop(context); // Regresa a la pantalla anterior
-              }, // Aquí puedes agregar la lógica para guardar el paciente
-              child: Text('Guardar Paciente'),
-            )
+
+                // Aquí luego llamaremos al PacienteService
+
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
       ),
