@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../widgets/custom_button.dart';
+
 
 class NuevoOdontologoScreen extends StatelessWidget {
   const NuevoOdontologoScreen({super.key});
@@ -13,40 +15,52 @@ class NuevoOdontologoScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
-          children: const [
+          children: [
 
-            TextField(
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Nombre',
                 border: OutlineInputBorder(),
               ),
             ),
 
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
 
-            TextField(
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Especialidad',
                 border: OutlineInputBorder(),
               ),
             ),
 
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
 
-            TextField(
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Teléfono',
                 border: OutlineInputBorder(),
               ),
             ),
 
-            SizedBox(height: 15),
+            const SizedBox(height: 15),
 
-            TextField(
+            const TextField(
               decoration: InputDecoration(
                 labelText: 'Correo',
                 border: OutlineInputBorder(),
               ),
+            ),
+
+            const SizedBox(height: 15),
+
+            CustomButton(
+              texto: 'Guardar Odontólogo',
+              icono: Icons.save,
+              onPressed: () {
+              
+              // Aquí luego llamaremos al OdontólogoService
+                Navigator.pop(context);
+              },
             ),
           ],
         ),
