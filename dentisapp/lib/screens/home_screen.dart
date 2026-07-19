@@ -7,6 +7,7 @@ import 'tratamientos/tratamientos_screen.dart';
 import 'pagos/pagos_screen.dart';
 import 'reportes/reportes_screen.dart';
 
+/// Pantalla principal que muestra los módulos principales de DentisApp.
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
@@ -17,6 +18,7 @@ class HomeScreen extends StatelessWidget {
         title: const Text('DentisApp'),
       ),
       
+      // Lista de opciones del sistema para navegar entre secciones.
       body: ListView(
         children: [
           

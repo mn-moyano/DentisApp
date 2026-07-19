@@ -3,10 +3,12 @@ using DentisAppAPI.Models;
 
 namespace DentisAppAPI.Controllers;
 
+/// Controlador encargado de gestionar las operaciones relacionadas con los pacientes.
 [ApiController]
 [Route("api/[controller]")]
 public class PacientesController : ControllerBase
 {
+    // Lista en memoria que simula la base de datos durante el desarrollo.
     private static readonly List<Paciente> Pacientes = new()
     {
         new Paciente
@@ -33,10 +35,12 @@ public class PacientesController : ControllerBase
         }
     };
 
+    /// Obtiene la lista completa de pacientes registrados.
     [HttpGet]
     public ActionResult<IEnumerable<Paciente>> Get()
         => Ok(Pacientes);
 
+    /// Obtiene un paciente según su identificador.
     [HttpGet("{id}")]
     public ActionResult<Paciente> Get(int id)
     {
@@ -44,6 +48,7 @@ public class PacientesController : ControllerBase
         return paciente is null ? NotFound() : Ok(paciente);
     }
 
+    /// Crea un nuevo paciente y lo agrega a la lista en memoria.
     [HttpPost]
     public ActionResult<Paciente> Post(Paciente paciente)
     {
@@ -52,6 +57,7 @@ public class PacientesController : ControllerBase
         return CreatedAtAction(nameof(Get), new { id = paciente.IdPaciente }, paciente);
     }
 
+    /// Actualiza los datos de un paciente existente.
     [HttpPut("{id}")]
     public ActionResult<Paciente> Put(int id, Paciente paciente)
     {
@@ -69,6 +75,7 @@ public class PacientesController : ControllerBase
         return Ok(existing);
     }
 
+    /// Elimina un paciente registrado por su identificador.
     [HttpDelete("{id}")]
     public IActionResult Delete(int id)
     {
