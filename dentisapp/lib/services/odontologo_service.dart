@@ -1,9 +1,9 @@
 import '../models/odontologo.dart';
 
+/// Servicio local para administrar los odontólogos del sistema.
 class OdontologoService {
-
+  /// Lista en memoria con profesionales de ejemplo.
   final List<Odontologo> _odontologos = [
-
     Odontologo(
       idOdontologo: 1,
       nombre: 'Dr. Andrés Morales',
@@ -12,7 +12,6 @@ class OdontologoService {
       correo: 'amorales@dentisapp.com',
       estado: 'Activo',
     ),
-
     Odontologo(
       idOdontologo: 2,
       nombre: 'Dra. María López',
@@ -21,7 +20,6 @@ class OdontologoService {
       correo: 'mlopez@dentisapp.com',
       estado: 'Activo',
     ),
-
     Odontologo(
       idOdontologo: 3,
       nombre: 'Dr. Carlos Sánchez',
@@ -32,12 +30,12 @@ class OdontologoService {
     ),
   ];
 
-  /// Obtener todos los odontólogos
+  /// Devuelve todos los odontólogos disponibles.
   List<Odontologo> obtenerOdontologos() {
     return _odontologos;
   }
 
-  /// Obtener odontólogo por ID
+  /// Busca un odontólogo por su identificador.
   Odontologo? obtenerOdontologoPorId(int id) {
     try {
       return _odontologos.firstWhere(
@@ -48,12 +46,12 @@ class OdontologoService {
     }
   }
 
-  /// Agregar odontólogo
+  /// Agrega un odontólogo nuevo a la lista local.
   void agregarOdontologo(Odontologo odontologo) {
     _odontologos.add(odontologo);
   }
 
-  /// Actualizar odontólogo
+  /// Actualiza la información de un odontólogo existente.
   void actualizarOdontologo(Odontologo odontologoActualizado) {
     final index = _odontologos.indexWhere(
       (o) => o.idOdontologo == odontologoActualizado.idOdontologo,
@@ -64,7 +62,7 @@ class OdontologoService {
     }
   }
 
-  /// Eliminar odontólogo
+  /// Elimina un odontólogo por su identificador.
   void eliminarOdontologo(int id) {
     _odontologos.removeWhere(
       (odontologo) => odontologo.idOdontologo == id,

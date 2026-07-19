@@ -1,6 +1,8 @@
 import '../models/pago.dart';
 
+/// Servicio local para manejar los pagos del sistema.
 class PagoService {
+  /// Lista en memoria con pagos de ejemplo.
   final List<Pago> _pagos = [
     Pago(
       idPago: 1,
@@ -25,12 +27,12 @@ class PagoService {
     ),
   ];
 
-  /// Obtener todos los pagos
+  /// Devuelve todos los pagos registrados localmente.
   List<Pago> obtenerPagos() {
     return _pagos;
   }
 
-  /// Obtener pago por ID
+  /// Busca un pago por su identificador.
   Pago? obtenerPagoPorId(int id) {
     try {
       return _pagos.firstWhere(
@@ -41,12 +43,12 @@ class PagoService {
     }
   }
 
-  /// Agregar pago
+  /// Agrega un nuevo pago a la lista local.
   void agregarPago(Pago pago) {
     _pagos.add(pago);
   }
 
-  /// Actualizar pago
+  /// Actualiza un pago existente.
   void actualizarPago(Pago pagoActualizado) {
     final index = _pagos.indexWhere(
       (p) => p.idPago == pagoActualizado.idPago,
@@ -57,7 +59,7 @@ class PagoService {
     }
   }
 
-  /// Eliminar pago
+  /// Elimina un pago por su identificador.
   void eliminarPago(int id) {
     _pagos.removeWhere(
       (pago) => pago.idPago == id,

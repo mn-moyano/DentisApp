@@ -7,10 +7,14 @@ import '../../widgets/custom_search_bar.dart';
 import 'nuevo_paciente_screen.dart';
 import 'editar_paciente_screen.dart';
 
+/// Pantalla principal para listar y manejar los pacientes del sistema.
 class PacientesScreen extends StatelessWidget {
   PacientesScreen({super.key});
 
+  /// Servicio local que proporciona los datos de pacientes.
   final PacienteService pacienteService = PacienteService();
+
+  /// Controlador para la barra de búsqueda.
   final TextEditingController buscarController = TextEditingController();
 
   @override
@@ -24,7 +28,7 @@ class PacientesScreen extends StatelessWidget {
 
       body: Column(
         children: [
-
+          /// Barra de búsqueda para encontrar pacientes rápidamente.
           CustomSearchBar(
             controller: buscarController,
             hint: 'Buscar paciente...',
@@ -83,6 +87,7 @@ class PacientesScreen extends StatelessWidget {
         ],
       ),
 
+      /// Botón flotante para crear un nuevo paciente.
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
 

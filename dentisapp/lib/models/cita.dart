@@ -1,8 +1,18 @@
+/// Modelo que representa una cita médica del sistema.
 class Cita {
+  /// Identificador único de la cita.
   final int? idCita;
+
+  /// Fecha y hora programada para la cita.
   final DateTime fecha;
+
+  /// Estado de la cita, por ejemplo programada o atendida.
   final String estado;
+
+  /// Identificador del paciente asociado a la cita.
   final int idPaciente;
+
+  /// Identificador del odontólogo asignado a la cita.
   final int idOdontologo;
 
   Cita({
@@ -13,6 +23,7 @@ class Cita {
     required this.idOdontologo,
   });
 
+  /// Convierte el modelo a un mapa para persistencia o envío.
   Map<String, dynamic> toMap() {
     return {
       'id_cita': idCita,
@@ -23,6 +34,7 @@ class Cita {
     };
   }
 
+  /// Crea una instancia desde un mapa de datos.
   factory Cita.fromMap(Map<String, dynamic> map) {
     return Cita(
       idCita: map['id_cita'],

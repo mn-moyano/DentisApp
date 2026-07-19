@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/paciente.dart';
 
+/// Pantalla para editar la información de un paciente existente.
 class EditarPacienteScreen extends StatelessWidget {
   final Paciente paciente;
   
@@ -100,9 +101,10 @@ class EditarPacienteScreen extends StatelessWidget {
 
           const SizedBox(height: 20),
 
+          /// Botón para guardar los cambios realizados al paciente.
           ElevatedButton(
             onPressed: () {
-                // Aquí puedes agregar la lógica para guardar los cambios del paciente
+              // Aquí se integrará la lógica para actualizar el paciente.
               Navigator.pop(context);
             },
             child: const Text('Guardar Cambios'),

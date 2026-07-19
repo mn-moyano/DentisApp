@@ -1,6 +1,8 @@
 import '../models/tratamiento.dart';
 
+/// Servicio local para administrar los tratamientos disponibles.
 class TratamientoService {
+  /// Lista en memoria con tratamientos de ejemplo.
   final List<Tratamiento> _tratamientos = [
     Tratamiento(
       idTratamiento: 1,
@@ -19,12 +21,12 @@ class TratamientoService {
     ),
   ];
 
-  /// Obtener todos los tratamientos
+  /// Devuelve todos los tratamientos registrados localmente.
   List<Tratamiento> obtenerTratamientos() {
     return _tratamientos;
   }
 
-  /// Obtener tratamiento por ID
+  /// Busca un tratamiento por su identificador.
   Tratamiento? obtenerTratamientoPorId(int id) {
     try {
       return _tratamientos.firstWhere(
@@ -35,12 +37,12 @@ class TratamientoService {
     }
   }
 
-  /// Agregar tratamiento
+  /// Agrega un nuevo tratamiento a la lista local.
   void agregarTratamiento(Tratamiento tratamiento) {
     _tratamientos.add(tratamiento);
   }
 
-  /// Actualizar tratamiento
+  /// Actualiza un tratamiento existente.
   void actualizarTratamiento(Tratamiento tratamientoActualizado) {
     final index = _tratamientos.indexWhere(
       (t) => t.idTratamiento == tratamientoActualizado.idTratamiento,
@@ -51,7 +53,7 @@ class TratamientoService {
     }
   }
 
-  /// Eliminar tratamiento
+  /// Elimina un tratamiento por su identificador.
   void eliminarTratamiento(int id) {
     _tratamientos.removeWhere(
       (tratamiento) => tratamiento.idTratamiento == id,

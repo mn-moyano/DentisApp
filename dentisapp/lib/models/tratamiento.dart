@@ -1,6 +1,12 @@
+/// Modelo que representa un tratamiento odontológico ofrecido.
 class Tratamiento {
+  /// Identificador único del tratamiento.
   final int? idTratamiento;
+
+  /// Descripción del tratamiento.
   final String descripcion;
+
+  /// Costo asociado al tratamiento.
   final double costo;
 
   Tratamiento({
@@ -9,6 +15,7 @@ class Tratamiento {
     required this.costo,
   });
 
+  /// Convierte el tratamiento a un mapa de datos.
   Map<String, dynamic> toMap() {
     return {
       'id_tratamiento': idTratamiento,
@@ -17,6 +24,7 @@ class Tratamiento {
     };
   }
 
+  /// Crea un tratamiento desde un mapa recibido.
   factory Tratamiento.fromMap(Map<String, dynamic> map) {
     return Tratamiento(
       idTratamiento: map['id_tratamiento'],

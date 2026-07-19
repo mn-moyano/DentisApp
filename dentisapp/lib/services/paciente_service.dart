@@ -1,7 +1,8 @@
 import '../models/paciente.dart';
 
+/// Servicio local para gestionar pacientes en la aplicación.
 class PacienteService {
-
+  /// Lista en memoria que simula los datos del sistema.
   final List<Paciente> _pacientes = [
     Paciente(
       idPaciente: 1,
@@ -35,12 +36,12 @@ class PacienteService {
     ),
   ];
 
-  /// Obtener todos los pacientes
+  /// Devuelve todos los pacientes registrados localmente.
   List<Paciente> obtenerPacientes() {
     return _pacientes;
   }
 
-  /// Buscar paciente por ID
+  /// Busca un paciente por su identificador.
   Paciente? obtenerPacientePorId(int id) {
     try {
       return _pacientes.firstWhere(
@@ -51,12 +52,12 @@ class PacienteService {
     }
   }
 
-  /// Agregar paciente
+  /// Agrega un nuevo paciente a la lista en memoria.
   void agregarPaciente(Paciente paciente) {
     _pacientes.add(paciente);
   }
 
-  /// Actualizar paciente
+  /// Actualiza la información de un paciente existente.
   void actualizarPaciente(Paciente pacienteActualizado) {
     final index = _pacientes.indexWhere(
       (p) => p.idPaciente == pacienteActualizado.idPaciente,
@@ -67,7 +68,7 @@ class PacienteService {
     }
   }
 
-  /// Eliminar paciente
+  /// Elimina un paciente por su identificador.
   void eliminarPaciente(int id) {
     _pacientes.removeWhere(
       (paciente) => paciente.idPaciente == id,

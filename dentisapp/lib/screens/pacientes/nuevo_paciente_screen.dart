@@ -3,9 +3,11 @@ import '../../widgets/custom_button.dart';
 import '../../widgets/custom_date_picker.dart';
 import '../../widgets/custom_textfield.dart';
 
+/// Pantalla para registrar un nuevo paciente.
 class NuevoPacienteScreen extends StatelessWidget {
   NuevoPacienteScreen({super.key});
 
+  /// Controladores de los campos del formulario.
   final TextEditingController nombreController = TextEditingController();
   final TextEditingController apellidoController = TextEditingController();
   final TextEditingController cedulaController = TextEditingController();
@@ -66,13 +68,12 @@ class NuevoPacienteScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
+            /// Botón para guardar la información del nuevo paciente.
             CustomButton(
               texto: 'Guardar Paciente',
               icono: Icons.save,
               onPressed: () {
-
-                // Aquí luego llamaremos al PacienteService
-
+                // Aquí luego se integrará la lógica con el servicio de pacientes.
                 Navigator.pop(context);
               },
             ),

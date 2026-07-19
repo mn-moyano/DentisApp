@@ -1,11 +1,27 @@
+/// Modelo que representa a un paciente dentro del sistema odontológico.
 class Paciente {
+  /// Identificador único del paciente.
   final int? idPaciente;
+
+  /// Nombre del paciente.
   final String nombre;
+
+  /// Apellido del paciente.
   final String apellido;
+
+  /// Número de cédula.
   final String cedula;
+
+  /// Fecha de nacimiento del paciente.
   final DateTime? fechaNacimiento;
+
+  /// Teléfono de contacto.
   final String? telefono;
+
+  /// Correo electrónico.
   final String? correo;
+
+  /// Dirección de domicilio.
   final String? direccion;
 
   Paciente({
@@ -19,6 +35,7 @@ class Paciente {
     this.direccion,
   });
 
+  /// Convierte el modelo a un mapa útil para almacenamiento o envío de datos.
   Map<String, dynamic> toMap() {
     return {
       'idPaciente': idPaciente,
@@ -32,6 +49,7 @@ class Paciente {
     };
   }
 
+  /// Crea una instancia del modelo desde un mapa de datos.
   factory Paciente.fromMap(Map<String, dynamic> map) {
     return Paciente(
       idPaciente: map['idPaciente'] ?? map['id_paciente'],
