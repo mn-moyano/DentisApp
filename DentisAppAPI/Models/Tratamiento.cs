@@ -16,4 +16,8 @@ public class Tratamiento
     /// Costo del tratamiento.
     [JsonPropertyName("costo")]
     public decimal? Costo { get; set; }
+
+    /// Citas que incluyen este tratamiento.
+    [JsonIgnore]
+    public ICollection<CitaTratamiento> Citas { get; set; } = [];
 }

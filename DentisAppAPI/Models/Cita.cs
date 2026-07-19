@@ -24,4 +24,8 @@ public class Cita
     /// Identificador del odontólogo asignado.
     [JsonPropertyName("idOdontologo")]
     public int? IdOdontologo { get; set; }
+
+    /// Tratamientos asociados a la cita.
+    [JsonIgnore]
+    public ICollection<CitaTratamiento> Tratamientos { get; set; } = [];
 }

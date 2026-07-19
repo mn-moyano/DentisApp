@@ -1,25 +1,26 @@
-using System.Text.Json.Serialization;
+using DentisAppAPI.Data;
+using Microsoft.EntityFrameworkCore;
 
 // Configura la API web y sus servicios principales.
 var builder = WebApplication.CreateBuilder(args);
 
-// Habilita los controladores y la documentación OpenAPI para la API.
+// Habilita los controladores y el contexto de base de datos.
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
-builder.Services.ConfigureHttpJsonOptions(options =>
-{
-    // Convierte las propiedades a formato camelCase y omite los valores nulos en la respuesta.
-    options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
-    options.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-});
+
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<DentisAppContext>(options =>
+    options.UseOracle(builder.Configuration.GetConnectionString("OracleConnection")));
 
 // Construye la aplicación con la configuración definida.
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    // Expone la documentación OpenAPI al ejecutar la API en modo desarrollo.
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 // Redirige las peticiones HTTP a HTTPS y registra los endpoints de los controladores.
