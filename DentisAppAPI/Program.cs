@@ -1,40 +1,34 @@
-using DentisAppAPI.Data;
-using Microsoft.EntityFrameworkCore;
+using DentisAppAPI.Services;
 
-// Configura la API web y sus servicios principales.
 var builder = WebApplication.CreateBuilder(args);
 
-// Habilita los controladores y el contexto de base de datos.
+// Registrar servicios
 builder.Services.AddControllers();
+builder.Services.AddScoped<PacienteService>();
 
+// Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
-
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<DentisAppContext>(options =>
+// Configurar CORS
+builder.Services.AddCors(options =>
 {
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-        ?? builder.Configuration.GetConnectionString("OracleConnection");
-
-    if (string.IsNullOrWhiteSpace(connectionString))
-    {
-        throw new InvalidOperationException("No se encontró la cadena de conexión de Oracle. Define 'DefaultConnection' o 'OracleConnection'.");
-    }
-
-    options.UseOracle(connectionString);
+    options.AddPolicy("AllowAll",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
 });
 
-// Construye la aplicación con la configuración definida.
 var app = builder.Build();
 
+// Habilitar Swagger en desarrollo
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Redirige las peticiones HTTP a HTTPS y registra los endpoints de los controladores.
-app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 app.MapControllers();
 
 app.Run();

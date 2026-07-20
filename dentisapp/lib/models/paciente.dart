@@ -1,27 +1,12 @@
 /// Modelo que representa a un paciente dentro del sistema odontológico.
 class Paciente {
-  /// Identificador único del paciente.
   final int? idPaciente;
-
-  /// Nombre del paciente.
   final String nombre;
-
-  /// Apellido del paciente.
   final String apellido;
-
-  /// Número de cédula.
   final String cedula;
-
-  /// Fecha de nacimiento del paciente.
   final DateTime? fechaNacimiento;
-
-  /// Teléfono de contacto.
   final String? telefono;
-
-  /// Correo electrónico.
   final String? correo;
-
-  /// Dirección de domicilio.
   final String? direccion;
 
   Paciente({
@@ -35,8 +20,8 @@ class Paciente {
     this.direccion,
   });
 
-  /// Convierte el modelo a un mapa útil para almacenamiento o envío de datos.
-  Map<String, dynamic> toMap() {
+  /// Convierte un objeto Paciente en JSON
+  Map<String, dynamic> toJson() {
     return {
       'idPaciente': idPaciente,
       'nombre': nombre,
@@ -49,23 +34,21 @@ class Paciente {
     };
   }
 
-  /// Crea una instancia del modelo desde un mapa de datos.
-  factory Paciente.fromMap(Map<String, dynamic> map) {
+  /// Convierte JSON en objeto Paciente
+  factory Paciente.fromJson(Map<String, dynamic> json) {
     return Paciente(
-      idPaciente: map['idPaciente'] ?? map['id_paciente'],
-      nombre: map['nombre']?.toString() ?? '',
-      apellido: map['apellido']?.toString() ?? '',
-      cedula: map['cedula']?.toString() ?? '',
-      fechaNacimiento: map['fechaNacimiento'] != null
-          ? DateTime.parse(map['fechaNacimiento'].toString())
-          : (map['fecha_nacimiento'] != null
-              ? DateTime.parse(map['fecha_nacimiento'].toString())
+      idPaciente: json['idPaciente'] ?? json['id_paciente'],
+      nombre: json['nombre'] ?? '',
+      apellido: json['apellido'] ?? '',
+      cedula: json['cedula'] ?? '',
+      fechaNacimiento: json['fechaNacimiento'] != null
+          ? DateTime.parse(json['fechaNacimiento'])
+          : (json['fecha_nacimiento'] != null
+              ? DateTime.parse(json['fecha_nacimiento'])
               : null),
-      telefono: map['telefono']?.toString(),
-      direccion: map['direccion']?.toString(),
-      correo: map['correo']?.toString(),
+      telefono: json['telefono'],
+      direccion: json['direccion'],
+      correo: json['correo'],
     );
   }
 }
-
-
