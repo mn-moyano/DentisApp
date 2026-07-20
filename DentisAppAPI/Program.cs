@@ -12,7 +12,17 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DentisAppContext>(options =>
-    options.UseOracle(builder.Configuration.GetConnectionString("OracleConnection")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+        ?? builder.Configuration.GetConnectionString("OracleConnection");
+
+    if (string.IsNullOrWhiteSpace(connectionString))
+    {
+        throw new InvalidOperationException("No se encontró la cadena de conexión de Oracle. Define 'DefaultConnection' o 'OracleConnection'.");
+    }
+
+    options.UseOracle(connectionString);
+});
 
 // Construye la aplicación con la configuración definida.
 var app = builder.Build();

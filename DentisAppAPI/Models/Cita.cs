@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
@@ -6,8 +7,9 @@ namespace DentisAppAPI.Models;
 public class Cita
 {
     /// Identificador único de la cita.
+    [Key]
     [JsonPropertyName("idCita")]
-    public int? IdCita { get; set; }
+    public int IdCita { get; set; }
 
     /// Fecha y hora de la cita.
     [JsonPropertyName("fecha")]

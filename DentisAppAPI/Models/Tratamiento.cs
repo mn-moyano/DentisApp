@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
@@ -6,8 +7,9 @@ namespace DentisAppAPI.Models;
 public class Tratamiento
 {
     /// Identificador único del tratamiento.
+    [Key]
     [JsonPropertyName("idTratamiento")]
-    public int? IdTratamiento { get; set; }
+    public int IdTratamiento { get; set; }
 
     /// Descripción del tratamiento.
     [JsonPropertyName("descripcion")]

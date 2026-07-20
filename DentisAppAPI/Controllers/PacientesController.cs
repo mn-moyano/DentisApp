@@ -1,5 +1,7 @@
-using Microsoft.AspNetCore.Mvc;
+using DentisAppAPI.Data;
 using DentisAppAPI.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DentisAppAPI.Controllers;
 
@@ -8,60 +10,63 @@ namespace DentisAppAPI.Controllers;
 [Route("api/[controller]")]
 public class PacientesController : ControllerBase
 {
-    // Lista en memoria que simula la base de datos durante el desarrollo.
-    private static readonly List<Paciente> Pacientes = new()
+    private readonly DentisAppContext _context;
+
+    public PacientesController(DentisAppContext context)
     {
-        new Paciente
-        {
-            IdPaciente = 1,
-            Nombre = "Juan",
-            Apellido = "Pérez",
-            Cedula = "1234567890",
-            FechaNacimiento = new DateTime(1990, 1, 1),
-            Telefono = "0991234567",
-            Correo = "juan@gmail.com",
-            Direccion = "Av. Quito"
-        },
-        new Paciente
-        {
-            IdPaciente = 2,
-            Nombre = "María",
-            Apellido = "Gómez",
-            Cedula = "0987654321",
-            FechaNacimiento = new DateTime(1992, 5, 15),
-            Telefono = "0987654321",
-            Correo = "maria@gmail.com",
-            Direccion = "Av. Amazonas"
-        }
-    };
+        _context = context;
+    }
 
     /// Obtiene la lista completa de pacientes registrados.
     [HttpGet]
-    public ActionResult<IEnumerable<Paciente>> Get()
-        => Ok(Pacientes);
+    public async Task<ActionResult<IEnumerable<Paciente>>> Get()
+    {
+        var pacientes = await _context.Pacientes
+            .OrderBy(p => p.IdPaciente)
+            .ToListAsync();
+
+        return Ok(pacientes);
+    }
 
     /// Obtiene un paciente según su identificador.
     [HttpGet("{id}")]
-    public ActionResult<Paciente> Get(int id)
+    public async Task<ActionResult<Paciente>> Get(int id)
     {
-        var paciente = Pacientes.FirstOrDefault(p => p.IdPaciente == id);
+        var paciente = await _context.Pacientes.FindAsync(id);
         return paciente is null ? NotFound() : Ok(paciente);
     }
 
-    /// Crea un nuevo paciente y lo agrega a la lista en memoria.
-    [HttpPost]
-    public ActionResult<Paciente> Post(Paciente paciente)
+    /// Verifica si la API puede conectarse a la base de datos.
+    [HttpGet("health")]
+    public async Task<IActionResult> Health()
     {
-        paciente.IdPaciente = Pacientes.Count + 1;
-        Pacientes.Add(paciente);
+        try
+        {
+            await _context.Database.OpenConnectionAsync();
+            await _context.Database.CloseConnectionAsync();
+            return Ok(new { connected = true, message = "Conexión OK" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { connected = false, error = ex.Message });
+        }
+    }
+
+    /// Crea un nuevo paciente y lo guarda en la base de datos.
+    [HttpPost]
+    public async Task<ActionResult<Paciente>> Post(Paciente paciente)
+    {
+        _context.Pacientes.Add(paciente);
+        await _context.SaveChangesAsync();
+
         return CreatedAtAction(nameof(Get), new { id = paciente.IdPaciente }, paciente);
     }
 
     /// Actualiza los datos de un paciente existente.
     [HttpPut("{id}")]
-    public ActionResult<Paciente> Put(int id, Paciente paciente)
+    public async Task<IActionResult> Put(int id, Paciente paciente)
     {
-        var existing = Pacientes.FirstOrDefault(p => p.IdPaciente == id);
+        var existing = await _context.Pacientes.FindAsync(id);
         if (existing is null) return NotFound();
 
         existing.Nombre = paciente.Nombre;
@@ -72,17 +77,21 @@ public class PacientesController : ControllerBase
         existing.Correo = paciente.Correo;
         existing.Direccion = paciente.Direccion;
 
+        await _context.SaveChangesAsync();
+
         return Ok(existing);
     }
 
     /// Elimina un paciente registrado por su identificador.
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var paciente = Pacientes.FirstOrDefault(p => p.IdPaciente == id);
+        var paciente = await _context.Pacientes.FindAsync(id);
         if (paciente is null) return NotFound();
 
-        Pacientes.Remove(paciente);
+        _context.Pacientes.Remove(paciente);
+        await _context.SaveChangesAsync();
+
         return NoContent();
     }
 }

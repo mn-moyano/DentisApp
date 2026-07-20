@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
@@ -6,8 +7,9 @@ namespace DentisAppAPI.Models;
 public class Odontologo
 {
     /// Identificador único del odontólogo.
+    [Key]
     [JsonPropertyName("idOdontologo")]
-    public int? IdOdontologo { get; set; }
+    public int IdOdontologo { get; set; }
 
     /// Nombre completo del profesional.
     [JsonPropertyName("nombre")]

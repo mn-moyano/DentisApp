@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
@@ -6,8 +7,9 @@ namespace DentisAppAPI.Models;
 public class Pago
 {
     /// Identificador único del pago.
+    [Key]
     [JsonPropertyName("idPago")]
-    public int? IdPago { get; set; }
+    public int IdPago { get; set; }
 
     /// Fecha en la que se realizó el pago.
     [JsonPropertyName("fechaPago")]

@@ -22,7 +22,7 @@ public class PacienteService
     public Paciente? Actualizar(Paciente paciente)
     {
         _repository.Actualizar(paciente);
-        return _repository.ObtenerPorId(paciente.IdPaciente ?? 0);
+        return _repository.ObtenerPorId(paciente.IdPaciente);
     }
 
     public bool Eliminar(int id)

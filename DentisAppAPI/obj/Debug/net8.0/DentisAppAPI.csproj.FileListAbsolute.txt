@@ -8,7 +8,6 @@ C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\De
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\appsettings.Development.json
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\appsettings.json
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\DentisAppAPI.staticwebassets.endpoints.json
-C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\DentisAppAPI.exe
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\DentisAppAPI.deps.json
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\DentisAppAPI.runtimeconfig.json
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\DentisAppAPI.dll
