@@ -1,6 +1,7 @@
 using DentisAppAPI.Models;
 using DentisAppAPI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DentisAppAPI.Controllers
 {
