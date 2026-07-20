@@ -117,3 +117,4 @@ C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\De
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\obj\Debug\net8.0\DentisAppAPI.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Personal\Documents\MADELYN\UEA\QUINTO SEMESTRE\APLICACIONES MÓVILES\DentisApp\DentisAppAPI\bin\Debug\net8.0\DentisAppAPI.exe

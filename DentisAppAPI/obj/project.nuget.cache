@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "fKbGM05GQA0=",
+  "dgSpecHash": "4wH4JxNfIYE=",
   "success": true,
-  "projectFilePath": "c:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
+  "projectFilePath": "C:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Personal\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\Personal\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
@@ -59,7 +59,8 @@
     "C:\\Users\\Personal\\.nuget\\packages\\system.threading.channels\\6.0.0\\system.threading.channels.6.0.0.nupkg.sha512",
     "C:\\Users\\Personal\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.16\\microsoft.netcore.app.ref.8.0.16.nupkg.sha512",
     "C:\\Users\\Personal\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.16\\microsoft.windowsdesktop.app.ref.8.0.16.nupkg.sha512",
-    "C:\\Users\\Personal\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.16\\microsoft.aspnetcore.app.ref.8.0.16.nupkg.sha512"
+    "C:\\Users\\Personal\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.16\\microsoft.aspnetcore.app.ref.8.0.16.nupkg.sha512",
+    "C:\\Users\\Personal\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\8.0.16\\microsoft.netcore.app.host.win-x64.8.0.16.nupkg.sha512"
   ],
   "logs": []
 }
