@@ -3016,24 +3016,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Personal\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\Rafael Lopez\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
+      "projectUniqueName": "C:\\Users\\Rafael Lopez\\Documents\\Aplicaciones Moviles\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
       "projectName": "DentisAppAPI",
-      "projectPath": "C:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
-      "packagesPath": "C:\\Users\\Personal\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\obj\\",
+      "projectPath": "C:\\Users\\Rafael Lopez\\Documents\\Aplicaciones Moviles\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
+      "packagesPath": "C:\\Users\\Rafael Lopez\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Rafael Lopez\\Documents\\Aplicaciones Moviles\\DentisApp\\DentisAppAPI\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Personal\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
+        "C:\\Users\\Rafael Lopez\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
