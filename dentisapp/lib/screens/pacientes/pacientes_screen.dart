@@ -46,12 +46,12 @@ class PacientesScreen extends StatelessWidget {
 
                     leading: CircleAvatar(
                       child: Text(
-                        paciente.nombre[0],
+                        paciente.nombres[0],
                       ),
                     ),
 
                     title: Text(
-                      '${paciente.nombre} ${paciente.apellido}',
+                      '${paciente.nombres} ${paciente.apellidos}',
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,

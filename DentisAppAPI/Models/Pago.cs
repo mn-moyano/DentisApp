@@ -1,29 +1,32 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
 
-/// Representa un pago registrado para una cita.
+[Table("PAGOS")]
 public class Pago
 {
-    /// Identificador único del pago.
     [Key]
+    [Column("ID_PAGO")]
     [JsonPropertyName("idPago")]
     public int IdPago { get; set; }
 
-    /// Fecha en la que se realizó el pago.
-    [JsonPropertyName("fechaPago")]
-    public DateTime? FechaPago { get; set; }
-
-    /// Monto pagado.
-    [JsonPropertyName("monto")]
-    public decimal? Monto { get; set; }
-
-    /// Método de pago utilizado.
-    [JsonPropertyName("metodoPago")]
-    public string? MetodoPago { get; set; }
-
-    /// Identificador de la cita relacionada.
+    [Column("ID_CITA")]
     [JsonPropertyName("idCita")]
-    public int? IdCita { get; set; }
+    public int IdCita { get; set; }
+
+    [Column("MONTO")]
+    [JsonPropertyName("monto")]
+    public decimal Monto { get; set; }
+
+    [Column("FECHA_PAGO")]
+    [JsonPropertyName("fechaPago")]
+    public DateTime FechaPago { get; set; }
+
+    [Required]
+    [StringLength(30)]
+    [Column("METODO_PAGO")]
+    [JsonPropertyName("metodoPago")]
+    public string MetodoPago { get; set; } = string.Empty;
 }

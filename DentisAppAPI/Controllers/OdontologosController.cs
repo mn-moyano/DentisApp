@@ -44,7 +44,7 @@ public class OdontologosController : ControllerBase
         var existing = Odontologos.FirstOrDefault(o => o.IdOdontologo == id);
         if (existing is null) return NotFound();
 
-        existing.Nombre = odontologo.Nombre;
+        existing.Nombress = odontologo.Nombress;
         existing.Especialidad = odontologo.Especialidad;
         existing.Telefono = odontologo.Telefono;
         existing.Correo = odontologo.Correo;

@@ -1,8 +1,8 @@
 /// Modelo que representa a un paciente dentro del sistema odontológico.
 class Paciente {
   final int? idPaciente;
-  final String nombre;
-  final String apellido;
+  final String nombres;
+  final String apellidos;
   final String cedula;
   final DateTime? fechaNacimiento;
   final String? telefono;
@@ -11,8 +11,8 @@ class Paciente {
 
   Paciente({
     this.idPaciente,
-    required this.nombre,
-    required this.apellido,
+    required this.nombres,
+    required this.apellidos,
     required this.cedula,
     this.fechaNacimiento,
     this.telefono,
@@ -24,8 +24,8 @@ class Paciente {
   Map<String, dynamic> toJson() {
     return {
       'idPaciente': idPaciente,
-      'nombre': nombre,
-      'apellido': apellido,
+      'nombre': nombres,
+      'apellido': apellidos,
       'cedula': cedula,
       'fechaNacimiento': fechaNacimiento?.toIso8601String(),
       'telefono': telefono,
@@ -38,8 +38,8 @@ class Paciente {
   factory Paciente.fromJson(Map<String, dynamic> json) {
     return Paciente(
       idPaciente: json['idPaciente'] ?? json['id_paciente'],
-      nombre: json['nombre'] ?? '',
-      apellido: json['apellido'] ?? '',
+      nombres: json['nombre'] ?? '',
+      apellidos: json['apellido'] ?? '',
       cedula: json['cedula'] ?? '',
       fechaNacimiento: json['fechaNacimiento'] != null
           ? DateTime.parse(json['fechaNacimiento'])

@@ -6,8 +6,8 @@ class PacienteService {
   final List<Paciente> _pacientes = [
     Paciente(
       idPaciente: 1,
-      nombre: 'Juan',
-      apellido: 'Pérez',
+      nombres: 'Juan',
+      apellidos: 'Pérez',
       cedula: '1234567890',
       fechaNacimiento: DateTime(1990, 1, 1),
       telefono: '0991234567',
@@ -16,8 +16,8 @@ class PacienteService {
     ),
     Paciente(
       idPaciente: 2,
-      nombre: 'María',
-      apellido: 'Gómez',
+      nombres: 'María',
+      apellidos: 'Gómez',
       cedula: '0987654321',
       fechaNacimiento: DateTime(1992, 5, 15),
       telefono: '0987654321',
@@ -26,8 +26,8 @@ class PacienteService {
     ),
     Paciente(
       idPaciente: 3,
-      nombre: 'Carlos',
-      apellido: 'Rodríguez',
+      nombres: 'Carlos',
+      apellidos: 'Rodríguez',
       cedula: '1122334455',
       fechaNacimiento: DateTime(1988, 8, 10),
       telefono: '0977777777',

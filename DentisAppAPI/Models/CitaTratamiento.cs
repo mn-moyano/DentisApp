@@ -1,23 +1,20 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
 
-/// Representa la asociación entre una cita y un tratamiento.
+[Table("CITA_TRATAMIENTO")]
 public class CitaTratamiento
 {
-    /// Identificador de la cita asociada.
+    [Column("ID_CITA")]
     [JsonPropertyName("idCita")]
-    public int? CitaId { get; set; }
+    public int CitaId { get; set; }
 
-    /// Identificador del tratamiento asociado.
+    [Column("ID_TRATAMIENTO")]
     [JsonPropertyName("idTratamiento")]
-    public int? TratamientoId { get; set; }
+    public int TratamientoId { get; set; }
 
-    /// Referencia de navegación a la cita relacionada.
-    [JsonIgnore]
-    public Cita? Cita { get; set; }
-
-    /// Referencia de navegación al tratamiento relacionado.
-    [JsonIgnore]
-    public Tratamiento? Tratamiento { get; set; }
+    [Column("CANTIDAD")]
+    [JsonPropertyName("cantidad")]
+    public int Cantidad { get; set; }
 }

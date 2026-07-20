@@ -4,7 +4,9 @@ class Odontologo {
   final int? idOdontologo;
 
   /// Nombre completo del profesional.
-  final String nombre;
+  final String nombres;
+
+  final String apellidos;
 
   /// Especialidad del odontólogo.
   final String especialidad;
@@ -20,7 +22,8 @@ class Odontologo {
 
   Odontologo({
     this.idOdontologo,
-    required this.nombre,
+    required this.nombres,
+    required this.apellidos,
     required this.especialidad,
     this.telefono,
     this.correo,
@@ -31,7 +34,8 @@ class Odontologo {
   Map<String, dynamic> toMap() {
     return {
       'id_odontologo': idOdontologo,
-      'nombre': nombre,
+      'nombre': nombres,
+      'apellido': apellidos,
       'especialidad': especialidad,
       'telefono': telefono,
       'correo': correo,
@@ -43,7 +47,8 @@ class Odontologo {
   factory Odontologo.fromMap(Map<String, dynamic> map) {
     return Odontologo(
       idOdontologo: map['id_odontologo'],
-      nombre: map['nombre'],
+      nombres: map['nombre'],
+      apellidos: map['apellido'],
       especialidad: map['especialidad'],
       telefono: map['telefono'],
       correo: map['correo'],

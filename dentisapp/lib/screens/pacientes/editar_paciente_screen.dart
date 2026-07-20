@@ -12,9 +12,9 @@ class EditarPacienteScreen extends StatelessWidget {
     
     final idPacienteController = TextEditingController(text: paciente.idPaciente.toString());
 
-    final nombresController = TextEditingController(text: paciente.nombre);
+    final nombresController = TextEditingController(text: paciente.nombres);
 
-    final apellidosController = TextEditingController(text: paciente.apellido);
+    final apellidosController = TextEditingController(text: paciente.apellidos);
 
     final cedulaController = TextEditingController(text: paciente.cedula);
 

@@ -6,7 +6,8 @@ class OdontologoService {
   final List<Odontologo> _odontologos = [
     Odontologo(
       idOdontologo: 1,
-      nombre: 'Dr. Andrés Morales',
+      nombres: 'Andrés',
+      apellidos: 'Morales',
       especialidad: 'Ortodoncia',
       telefono: '0991111111',
       correo: 'amorales@dentisapp.com',
@@ -14,7 +15,8 @@ class OdontologoService {
     ),
     Odontologo(
       idOdontologo: 2,
-      nombre: 'Dra. María López',
+      nombres: 'María',
+      apellidos: 'López',
       especialidad: 'Endodoncia',
       telefono: '0992222222',
       correo: 'mlopez@dentisapp.com',
@@ -22,7 +24,8 @@ class OdontologoService {
     ),
     Odontologo(
       idOdontologo: 3,
-      nombre: 'Dr. Carlos Sánchez',
+      nombres: 'Carlos',
+      apellidos: 'Sánchez',
       especialidad: 'Odontología General',
       telefono: '0993333333',
       correo: 'csanchez@dentisapp.com',

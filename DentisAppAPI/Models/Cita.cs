@@ -1,33 +1,32 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
 
-/// Representa una cita agendada en el sistema odontológico.
+[Table("CITAS")]
 public class Cita
 {
-    /// Identificador único de la cita.
     [Key]
+    [Column("ID_CITA")]
     [JsonPropertyName("idCita")]
     public int IdCita { get; set; }
 
-    /// Fecha y hora de la cita.
+    [Column("FECHA")]
     [JsonPropertyName("fecha")]
-    public DateTime? Fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
-    /// Estado actual de la cita.
+    [Required]
+    [StringLength(20)]
+    [Column("ESTADO")]
     [JsonPropertyName("estado")]
-    public string? Estado { get; set; }
+    public string Estado { get; set; } = string.Empty;
 
-    /// Identificador del paciente asociado.
+    [Column("ID_PACIENTE")]
     [JsonPropertyName("idPaciente")]
-    public int? IdPaciente { get; set; }
+    public int IdPaciente { get; set; }
 
-    /// Identificador del odontólogo asignado.
+    [Column("ID_ODONTOLOGO")]
     [JsonPropertyName("idOdontologo")]
-    public int? IdOdontologo { get; set; }
-
-    /// Tratamientos asociados a la cita.
-    [JsonIgnore]
-    public ICollection<CitaTratamiento> Tratamientos { get; set; } = [];
+    public int IdOdontologo { get; set; }
 }

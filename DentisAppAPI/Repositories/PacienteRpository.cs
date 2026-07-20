@@ -23,8 +23,8 @@ public class PacienteRepository
         var existente = _pacientes.FirstOrDefault(p => p.IdPaciente == pacienteActualizado.IdPaciente);
         if (existente is null) return;
 
-        existente.Nombre = pacienteActualizado.Nombre;
-        existente.Apellido = pacienteActualizado.Apellido;
+        existente.Nombres = pacienteActualizado.Nombres;
+        existente.Apellidos = pacienteActualizado.Apellidos;
         existente.Cedula = pacienteActualizado.Cedula;
         existente.FechaNacimiento = pacienteActualizado.FechaNacimiento;
         existente.Telefono = pacienteActualizado.Telefono;

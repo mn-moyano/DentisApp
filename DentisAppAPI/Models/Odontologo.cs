@@ -1,33 +1,46 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
 
-/// Representa a un odontólogo registrado en el sistema.
+[Table("ODONTOLOGOS")]
 public class Odontologo
 {
-    /// Identificador único del odontólogo.
     [Key]
+    [Column("ID_ODONTOLOGO")]
     [JsonPropertyName("idOdontologo")]
     public int IdOdontologo { get; set; }
 
-    /// Nombre completo del profesional.
-    [JsonPropertyName("nombre")]
-    public string? Nombre { get; set; }
+    [Required]
+    [StringLength(100)]
+    [Column("NOMBRES")]
+    [JsonPropertyName("nombres")]
+    public string Nombres { get; set; } = string.Empty;
 
-    /// Especialidad del odontólogo.
+    [Required]
+    [StringLength(100)]
+    [Column("APELLIDOS")]
+    [JsonPropertyName("apellidos")]
+    public string Apellidos { get; set; } = string.Empty;
+
+    [Required]
+    [StringLength(80)]
+    [Column("ESPECIALIDAD")]
     [JsonPropertyName("especialidad")]
-    public string? Especialidad { get; set; }
+    public string Especialidad { get; set; } = string.Empty;
 
-    /// Teléfono de contacto.
+    [StringLength(15)]
+    [Column("TELEFONO")]
     [JsonPropertyName("telefono")]
     public string? Telefono { get; set; }
 
-    /// Correo electrónico.
+    [StringLength(100)]
+    [Column("CORREO")]
     [JsonPropertyName("correo")]
     public string? Correo { get; set; }
 
-    /// Estado actual del odontólogo.
+    [Column("ESTADO")]
     [JsonPropertyName("estado")]
-    public string? Estado { get; set; }
+    public string Estado { get; set; } = "Activo";
 }

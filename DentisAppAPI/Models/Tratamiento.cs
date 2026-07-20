@@ -1,25 +1,29 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
 
-/// Representa un tratamiento odontológico ofrecido por la clínica.
+[Table("TRATAMIENTOS")]
 public class Tratamiento
 {
-    /// Identificador único del tratamiento.
     [Key]
+    [Column("ID_TRATAMIENTO")]
     [JsonPropertyName("idTratamiento")]
     public int IdTratamiento { get; set; }
 
-    /// Descripción del tratamiento.
+    [Required]
+    [StringLength(100)]
+    [Column("TIPO_TRATAMIENTO")]
+    [JsonPropertyName("tipoTratamiento")]
+    public string TipoTratamiento { get; set; } = string.Empty;
+
+    [StringLength(300)]
+    [Column("DESCRIPCION")]
     [JsonPropertyName("descripcion")]
     public string? Descripcion { get; set; }
 
-    /// Costo del tratamiento.
+    [Column("COSTO")]
     [JsonPropertyName("costo")]
-    public decimal? Costo { get; set; }
-
-    /// Citas que incluyen este tratamiento.
-    [JsonIgnore]
-    public ICollection<CitaTratamiento> Citas { get; set; } = [];
+    public decimal Costo { get; set; }
 }

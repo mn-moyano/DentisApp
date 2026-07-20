@@ -1,41 +1,34 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace DentisAppAPI.Models;
 
-/// Representa a un paciente dentro del sistema odontológico.
+[Table("PACIENTES")]
 public class Paciente
 {
-    /// Identificador único del paciente.
     [Key]
-    [JsonPropertyName("idPaciente")]
+    [Column("ID_PACIENTE")]
     public int IdPaciente { get; set; }
 
-    /// Nombre del paciente.
-    [JsonPropertyName("nombre")]
-    public string? Nombre { get; set; }
+    [Column("NOMBRES")]
+    public string Nombres { get; set; } = string.Empty;
 
-    /// Apellido del paciente.
-    [JsonPropertyName("apellido")]
-    public string? Apellido { get; set; }
+    [Column("APELLIDOS")]
+    public string Apellidos { get; set; } = string.Empty;
 
-    /// Número de cédula del paciente.
-    [JsonPropertyName("cedula")]
-    public string? Cedula { get; set; }
+    [Column("CEDULA")]
+    public string Cedula { get; set; } = string.Empty;
 
-    /// Fecha de nacimiento del paciente.
-    [JsonPropertyName("fechaNacimiento")]
+    [Column("FECHA_NACIMIENTO")]
     public DateTime? FechaNacimiento { get; set; }
 
-    /// Número de teléfono de contacto.
-    [JsonPropertyName("telefono")]
+    [Column("TELEFONO")]
     public string? Telefono { get; set; }
 
-    /// Correo electrónico del paciente.
-    [JsonPropertyName("correo")]
+    [Column("CORREO")]
     public string? Correo { get; set; }
 
-    /// Dirección de domicilio del paciente.
-    [JsonPropertyName("direccion")]
+    [Column("DIRECCION")]
     public string? Direccion { get; set; }
 }

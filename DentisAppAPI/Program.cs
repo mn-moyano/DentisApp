@@ -12,6 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DentisAppContext>(options =>
     options.UseOracle(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddMemoryCache(); // Agrega soporte para caché en memoria
+
+builder.Services.AddControllers(); 
+
 // --- 2. CONFIGURACIÓN JWT ---
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var key = Encoding.UTF8.GetBytes(jwtSettings["Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"));

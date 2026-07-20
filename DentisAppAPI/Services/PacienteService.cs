@@ -51,7 +51,7 @@ namespace DentisAppAPI.Services
                              VALUES (:nombre, :apellido, :cedula, :fechaNacimiento, :telefono, :correo, :direccion)";
 
             using var command = new OracleCommand(query, connection);
-            command.Parameters.Add(new OracleParameter("nombre", paciente.Nombre));
+            command.Parameters.Add(new OracleParameter("nombre", paciente.Nombres));
             command.Parameters.Add(new OracleParameter("apellido", paciente.Apellido));
             command.Parameters.Add(new OracleParameter("cedula", paciente.Cedula));
             command.Parameters.Add(new OracleParameter("fechaNacimiento", paciente.FechaNacimiento));
@@ -72,7 +72,7 @@ namespace DentisAppAPI.Services
                              WHERE IDPACIENTE=:idPaciente";
 
             using var command = new OracleCommand(query, connection);
-            command.Parameters.Add(new OracleParameter("nombre", paciente.Nombre));
+            command.Parameters.Add(new OracleParameter("nombre", paciente.Nombres));
             command.Parameters.Add(new OracleParameter("apellido", paciente.Apellido));
             command.Parameters.Add(new OracleParameter("cedula", paciente.Cedula));
             command.Parameters.Add(new OracleParameter("fechaNacimiento", paciente.FechaNacimiento));
