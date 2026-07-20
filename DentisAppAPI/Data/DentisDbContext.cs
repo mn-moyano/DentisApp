@@ -27,12 +27,25 @@ namespace DentisAppAPI.Data
                 .HasKey(ct => new { ct.CitaId, ct.TratamientoId });
 
             // Nombres de tablas en Oracle
-            modelBuilder.Entity<Paciente>().ToTable("PACIENTE");
-            modelBuilder.Entity<Odontologo>().ToTable("ODONTOLOGO");
-            modelBuilder.Entity<Cita>().ToTable("CITA");
-            modelBuilder.Entity<Tratamiento>().ToTable("TRATAMIENTO");
-            modelBuilder.Entity<Pago>().ToTable("PAGO");
+            modelBuilder.Entity<Paciente>().ToTable("PACIENTES");
+            modelBuilder.Entity<Odontologo>().ToTable("ODONTOLOGOS");
+            modelBuilder.Entity<Cita>().ToTable("CITAS");
+            modelBuilder.Entity<Tratamiento>().ToTable("TRATAMIENTOS");
+            modelBuilder.Entity<Pago>().ToTable("PAGOS");
             modelBuilder.Entity<CitaTratamiento>().ToTable("CITA_TRATAMIENTO");
+            // Configuración para el Monto del Pago
+            modelBuilder.Entity<Pago>()
+            .Property(p => p.Monto)
+            .HasPrecision(18, 2); // 18 dígitos en total, 2 decimales para los centavos
+
+            // Configuración para el Costo del Tratamiento
+            modelBuilder.Entity<Tratamiento>()
+            .Property(t => t.Costo)
+            .HasPrecision(18, 2);
+            // Cambia el nombre del constraint a algo único, por ejemplo, PK_DENTIS_CITA
+            modelBuilder.Entity<Cita>()
+            .HasKey(c => c.IdCita)
+            .HasName("PK_DENTIS_CITA");
         }
     }
 }

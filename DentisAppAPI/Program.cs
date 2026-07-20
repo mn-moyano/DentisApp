@@ -1,5 +1,5 @@
-﻿using DentisAppAPI.Data;
-using DentisAppAPI.Services;
+﻿using DentisAppAPI.Services;
+using DentisAppAPI.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +9,7 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. CONFIGURACIÓN DE LA BASE DE DATOS ORACLE ---
-builder.Services.AddDbContext<DentisDbContext>(options =>
+builder.Services.AddDbContext<DentisAppContext>(options =>
     options.UseOracle(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // --- 2. CONFIGURACIÓN JWT ---
@@ -86,20 +86,26 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// --- 5. MIDDLEWARE ---
+// --- 5. MIDDLEWARE PIPELINE ---
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "DentisApp API v1");
-        c.RoutePrefix = "docs";
+        c.RoutePrefix = "docs"; // Tu swagger estará disponible en /docs en vez de /swagger
     });
 }
 
+// Habilita la redirección a HTTPS (opcional en desarrollo local si usas HTTP puro)
+app.UseHttpsRedirection();
+
+// El orden aquí es crítico para la seguridad y peticiones móviles
 app.UseCors("AllowAll");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();
