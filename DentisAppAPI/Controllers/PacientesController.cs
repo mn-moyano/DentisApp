@@ -13,16 +13,21 @@ namespace DentisAppAPI.Controllers
     {
         private readonly DentisAppContext _context;
         private readonly IMemoryCache _cache;
+        private readonly ILogger<PacientesController> _logger;
 
-        public PacientesController(DentisAppContext context, IMemoryCache cache)
+        public PacientesController(
+            DentisAppContext context,
+            IMemoryCache cache,
+            ILogger<PacientesController> logger)
         {
             _context = context;
             _cache = cache;
+            _logger = logger;
         }
 
-        //===========================================
-        // GET: api/pacientes
-        //===========================================
+        /// <summary>
+        /// Obtiene todos los pacientes utilizando caché (Cache Aside).
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> GetPacientes()
         {
@@ -33,6 +38,7 @@ namespace DentisAppAPI.Controllers
                 if (!_cache.TryGetValue(cacheKey, out List<Paciente>? pacientes))
                 {
                     pacientes = await _context.Pacientes
+                        .AsNoTracking()
                         .OrderBy(p => p.Nombres)
                         .ToListAsync();
 
@@ -40,6 +46,12 @@ namespace DentisAppAPI.Controllers
                         .SetAbsoluteExpiration(TimeSpan.FromMinutes(5));
 
                     _cache.Set(cacheKey, pacientes, opciones);
+
+                    _logger.LogInformation("Pacientes obtenidos desde Oracle.");
+                }
+                else
+                {
+                    _logger.LogInformation("Pacientes obtenidos desde la memoria caché.");
                 }
 
                 return Ok(new ApiResponse<List<Paciente>>
@@ -51,26 +63,35 @@ namespace DentisAppAPI.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al listar pacientes.");
+
                 return StatusCode(500, new ApiError
                 {
-                    Message = $"Error interno: {ex.Message}"
+                    StatusCode = 500,
+                    Timestamp = DateTime.Now,
+                    Message = "Ocurrió un error interno del servidor."
                 });
             }
         }
-        //===========================================
-        // GET: api/pacientes/5
-        //===========================================
+
+        /// <summary>
+        /// Obtiene un paciente por su ID.
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPaciente(int id)
         {
             try
             {
-                var paciente = await _context.Pacientes.FindAsync(id);
+                var paciente = await _context.Pacientes
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(p => p.IdPaciente == id);
 
                 if (paciente == null)
                 {
                     return NotFound(new ApiError
                     {
+                        StatusCode = 404,
+                        Timestamp = DateTime.Now,
                         Message = "Paciente no encontrado."
                     });
                 }
@@ -84,15 +105,20 @@ namespace DentisAppAPI.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al buscar paciente.");
+
                 return StatusCode(500, new ApiError
                 {
-                    Message = $"Error interno: {ex.Message}"
+                    StatusCode = 500,
+                    Timestamp = DateTime.Now,
+                    Message = "Ocurrió un error interno del servidor."
                 });
             }
         }
-        //===========================================
-        // GET: api/pacientes/paginado?page=1&pageSize=10
-        //===========================================
+
+        /// <summary>
+        /// Lista pacientes con paginación.
+        /// </summary>
         [HttpGet("paginado")]
         public async Task<IActionResult> GetPacientesPaginado(
             int page = 1,
@@ -109,9 +135,10 @@ namespace DentisAppAPI.Controllers
                 if (pageSize > 50)
                     pageSize = 50;
 
-                int totalRegistros = await _context.Pacientes.CountAsync();
+                var totalRegistros = await _context.Pacientes.CountAsync();
 
                 var pacientes = await _context.Pacientes
+                    .AsNoTracking()
                     .OrderBy(p => p.Nombres)
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
@@ -133,15 +160,19 @@ namespace DentisAppAPI.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error en paginación.");
+
                 return StatusCode(500, new ApiError
                 {
-                    Message = $"Error interno: {ex.Message}"
+                    StatusCode = 500,
+                    Timestamp = DateTime.Now,
+                    Message = "Ocurrió un error interno del servidor."
                 });
             }
         }
-        //===========================================
-        // POST: api/pacientes
-        //===========================================
+                /// <summary>
+        /// Registra un nuevo paciente.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> PostPaciente(Paciente paciente)
         {
@@ -150,6 +181,16 @@ namespace DentisAppAPI.Controllers
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
+                if (paciente == null)
+                {
+                    return BadRequest(new ApiError
+                    {
+                        StatusCode = 400,
+                        Timestamp = DateTime.Now,
+                        Message = "Los datos enviados son inválidos."
+                    });
+                }
+
                 bool cedulaExiste = await _context.Pacientes
                     .AnyAsync(p => p.Cedula == paciente.Cedula);
 
@@ -157,6 +198,8 @@ namespace DentisAppAPI.Controllers
                 {
                     return Conflict(new ApiError
                     {
+                        StatusCode = 409,
+                        Timestamp = DateTime.Now,
                         Message = "La cédula ya se encuentra registrada."
                     });
                 }
@@ -168,36 +211,47 @@ namespace DentisAppAPI.Controllers
                 {
                     return Conflict(new ApiError
                     {
+                        StatusCode = 409,
+                        Timestamp = DateTime.Now,
                         Message = "El correo ya se encuentra registrado."
                     });
                 }
 
                 _context.Pacientes.Add(paciente);
-                await _context.SaveChangesAsync();
-                _cache.Remove("PACIENTES_CACHE"); // Limpiar la caché después de agregar un nuevo paciente
 
-                return CreatedAtAction(nameof(GetPaciente),
+                await _context.SaveChangesAsync();
+
+                _cache.Remove("PACIENTES_CACHE");
+
+                _logger.LogInformation(
+                    "Paciente {Paciente} registrado correctamente.",
+                    paciente.Nombres);
+
+                return CreatedAtAction(
+                    nameof(GetPaciente),
                     new { id = paciente.IdPaciente },
                     new ApiResponse<Paciente>
                     {
                         Success = true,
                         Message = "Paciente registrado correctamente.",
                         Data = paciente
-                    }
-                );
+                    });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error al registrar paciente.");
+
                 return StatusCode(500, new ApiError
                 {
-                    Message = $"Error interno: {ex.Message}"
+                    StatusCode = 500,
+                    Timestamp = DateTime.Now,
+                    Message = "Ocurrió un error interno del servidor."
                 });
             }
         }
-
-        //===========================================
-        // PUT: api/pacientes/5
-        //===========================================
+                /// <summary>
+        /// Actualiza la información de un paciente.
+        /// </summary>
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPaciente(int id, Paciente paciente)
         {
@@ -207,7 +261,22 @@ namespace DentisAppAPI.Controllers
                 {
                     return BadRequest(new ApiError
                     {
-                        Message = "El ID enviado no coincide."
+                        StatusCode = 400,
+                        Timestamp = DateTime.Now,
+                        Message = "El ID enviado no coincide con el paciente."
+                    });
+                }
+
+                var pacienteExistente = await _context.Pacientes
+                    .FirstOrDefaultAsync(p => p.IdPaciente == id);
+
+                if (pacienteExistente == null)
+                {
+                    return NotFound(new ApiError
+                    {
+                        StatusCode = 404,
+                        Timestamp = DateTime.Now,
+                        Message = "Paciente no encontrado."
                     });
                 }
 
@@ -220,6 +289,8 @@ namespace DentisAppAPI.Controllers
                 {
                     return Conflict(new ApiError
                     {
+                        StatusCode = 409,
+                        Timestamp = DateTime.Now,
                         Message = "La cédula pertenece a otro paciente."
                     });
                 }
@@ -233,57 +304,68 @@ namespace DentisAppAPI.Controllers
                 {
                     return Conflict(new ApiError
                     {
+                        StatusCode = 409,
+                        Timestamp = DateTime.Now,
                         Message = "El correo pertenece a otro paciente."
                     });
                 }
 
-                _context.Entry(paciente).State = EntityState.Modified;
+                // Actualizar únicamente los campos editables
+                pacienteExistente.Nombres = paciente.Nombres;
+                pacienteExistente.Apellidos = paciente.Apellidos;
+                pacienteExistente.Cedula = paciente.Cedula;
+                pacienteExistente.FechaNacimiento = paciente.FechaNacimiento;
+                pacienteExistente.Telefono = paciente.Telefono;
+                pacienteExistente.Correo = paciente.Correo;
+                pacienteExistente.Direccion = paciente.Direccion;
 
                 await _context.SaveChangesAsync();
+
+                // Invalidar caché
                 _cache.Remove("PACIENTES_CACHE");
+
+                _logger.LogInformation(
+                    "Paciente con ID {IdPaciente} actualizado correctamente.",
+                    id);
 
                 return Ok(new ApiResponse<Paciente>
                 {
                     Success = true,
                     Message = "Paciente actualizado correctamente.",
-                    Data = paciente
+                    Data = pacienteExistente
                 });
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _context.Pacientes.AnyAsync(p => p.IdPaciente == id))
-                {
-                    return NotFound(new ApiError
-                    {
-                        Message = "Paciente no encontrado."
-                    });
-                }
-
-                throw;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex,
+                    "Error al actualizar el paciente con ID {IdPaciente}.",
+                    id);
+
                 return StatusCode(500, new ApiError
                 {
-                    Message = $"Error interno: {ex.Message}"
+                    StatusCode = 500,
+                    Timestamp = DateTime.Now,
+                    Message = "Ocurrió un error interno del servidor."
                 });
             }
         }
-
-        //===========================================
-        // DELETE: api/pacientes/5
-        //===========================================
+                /// <summary>
+        /// Elimina un paciente.
+        /// </summary>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePaciente(int id)
         {
             try
             {
-                var paciente = await _context.Pacientes.FindAsync(id);
+                var paciente = await _context.Pacientes
+                    .FirstOrDefaultAsync(p => p.IdPaciente == id);
 
                 if (paciente == null)
                 {
                     return NotFound(new ApiError
                     {
+                        StatusCode = 404,
+                        Timestamp = DateTime.Now,
                         Message = "Paciente no encontrado."
                     });
                 }
@@ -291,20 +373,32 @@ namespace DentisAppAPI.Controllers
                 _context.Pacientes.Remove(paciente);
 
                 await _context.SaveChangesAsync();
-                _cache.Remove("PACIENTES_CACHE"); // Limpiar la caché después de eliminar un paciente
+
+                // Invalidar caché
+                _cache.Remove("PACIENTES_CACHE");
+
+                _logger.LogInformation(
+                    "Paciente con ID {IdPaciente} eliminado correctamente.",
+                    id);
 
                 return Ok(new ApiResponse<string>
                 {
                     Success = true,
                     Message = "Paciente eliminado correctamente.",
-                    Data = null
+                    Data = $"Paciente con ID {id} eliminado."
                 });
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex,
+                    "Error al eliminar el paciente con ID {IdPaciente}.",
+                    id);
+
                 return StatusCode(500, new ApiError
                 {
-                    Message = $"Error interno: {ex.Message}"
+                    StatusCode = 500,
+                    Timestamp = DateTime.Now,
+                    Message = "Ocurrió un error interno del servidor."
                 });
             }
         }

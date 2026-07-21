@@ -1,8 +1,13 @@
-namespace DentisAppAPI.Helpers;
-
-public class ApiError
+namespace DentisAppAPI.Helpers
 {
-    public bool Success => false;
+    public class ApiError
+    {
+        public bool Success => false;
 
-    public string Message { get; set; } = string.Empty;
+        public int StatusCode { get; set; }
+
+        public string Message { get; set; } = string.Empty;
+
+        public DateTime Timestamp { get; set; }
+    }
 }

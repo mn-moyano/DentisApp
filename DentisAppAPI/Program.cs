@@ -7,6 +7,9 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 // --- 1. CONFIGURACIÓN DE LA BASE DE DATOS ORACLE ---
 builder.Services.AddDbContext<DentisAppContext>(options =>
@@ -14,7 +17,6 @@ builder.Services.AddDbContext<DentisAppContext>(options =>
 
 builder.Services.AddMemoryCache(); // Agrega soporte para caché en memoria
 
-builder.Services.AddControllers(); 
 
 // --- 2. CONFIGURACIÓN JWT ---
 var jwtSettings = builder.Configuration.GetSection("Jwt");

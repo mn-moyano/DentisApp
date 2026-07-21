@@ -12,7 +12,7 @@ public class Tratamiento
     [JsonPropertyName("idTratamiento")]
     public int IdTratamiento { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "El tipo de tratamiento es obligatorio.")]
     [StringLength(100)]
     [Column("TIPO_TRATAMIENTO")]
     [JsonPropertyName("tipoTratamiento")]
@@ -23,7 +23,17 @@ public class Tratamiento
     [JsonPropertyName("descripcion")]
     public string? Descripcion { get; set; }
 
-    [Column("COSTO")]
+    [Required(ErrorMessage = "El costo es obligatorio.")]
+    [Range(0.01, 100000,
+        ErrorMessage = "El costo debe ser mayor que cero.")]
+    [Column("COSTO", TypeName = "NUMBER(10,2)")]
     [JsonPropertyName("costo")]
     public decimal Costo { get; set; }
+
+    //==========================
+    // Propiedad de navegación
+    //==========================
+
+    public ICollection<CitaTratamiento> CitaTratamientos { get; set; }
+        = new List<CitaTratamiento>();
 }
