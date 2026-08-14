@@ -19,7 +19,7 @@ namespace DentisAppAPI.Services
             using var connection = new OracleConnection(_connectionString);
             connection.Open();
 
-            string query = "SELECT IDPACIENTE, NOMBRE, APELLIDO, CEDULA, FECHANACIMIENTO, TELEFONO, CORREO, DIRECCION FROM PACIENTES";
+            string query = "SELECT ID_PACIENTE, NOMBRES, APELLIDOS, CEDULA, FECHA_NACIMIENTO, TELEFONO, CORREO, DIRECCION FROM PACIENTES";
 
             using var command = new OracleCommand(query, connection);
             using var reader = command.ExecuteReader();
@@ -29,8 +29,8 @@ namespace DentisAppAPI.Services
                 pacientes.Add(new Paciente
                 {
                     IdPaciente = reader.GetInt32(0),
-                    Nombre = reader.IsDBNull(1) ? null : reader.GetString(1),
-                    Apellido = reader.IsDBNull(2) ? null : reader.GetString(2),
+                    Nombres = reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                    Apellidos = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                     Cedula = reader.IsDBNull(3) ? null : reader.GetString(3),
                     FechaNacimiento = reader.IsDBNull(4) ? null : reader.GetDateTime(4),
                     Telefono = reader.IsDBNull(5) ? null : reader.GetString(5),
@@ -47,12 +47,12 @@ namespace DentisAppAPI.Services
             using var connection = new OracleConnection(_connectionString);
             connection.Open();
 
-            string query = @"INSERT INTO PACIENTES (NOMBRE, APELLIDO, CEDULA, FECHANACIMIENTO, TELEFONO, CORREO, DIRECCION)
-                             VALUES (:nombre, :apellido, :cedula, :fechaNacimiento, :telefono, :correo, :direccion)";
+            string query = @"INSERT INTO PACIENTES (NOMBRES, APELLIDOS, CEDULA, FECHA_NACIMIENTO, TELEFONO, CORREO, DIRECCION)
+                             VALUES (:nombres, :apellidos, :cedula, :fechaNacimiento, :telefono, :correo, :direccion)";
 
             using var command = new OracleCommand(query, connection);
-            command.Parameters.Add(new OracleParameter("nombre", paciente.Nombres));
-            command.Parameters.Add(new OracleParameter("apellido", paciente.Apellido));
+            command.Parameters.Add(new OracleParameter("nombres", paciente.Nombres));
+            command.Parameters.Add(new OracleParameter("apellidos", paciente.Apellidos));
             command.Parameters.Add(new OracleParameter("cedula", paciente.Cedula));
             command.Parameters.Add(new OracleParameter("fechaNacimiento", paciente.FechaNacimiento));
             command.Parameters.Add(new OracleParameter("telefono", paciente.Telefono));
@@ -67,13 +67,13 @@ namespace DentisAppAPI.Services
             using var connection = new OracleConnection(_connectionString);
             connection.Open();
 
-            string query = @"UPDATE PACIENTES SET NOMBRE=:nombre, APELLIDO=:apellido, CEDULA=:cedula, 
-                             FECHANACIMIENTO=:fechaNacimiento, TELEFONO=:telefono, CORREO=:correo, DIRECCION=:direccion
-                             WHERE IDPACIENTE=:idPaciente";
+            string query = @"UPDATE PACIENTES SET NOMBRES=:nombres, APELLIDOS=:apellidos, CEDULA=:cedula, 
+                             FECHA_NACIMIENTO=:fechaNacimiento, TELEFONO=:telefono, CORREO=:correo, DIRECCION=:direccion
+                             WHERE ID_PACIENTE=:idPaciente";
 
             using var command = new OracleCommand(query, connection);
-            command.Parameters.Add(new OracleParameter("nombre", paciente.Nombres));
-            command.Parameters.Add(new OracleParameter("apellido", paciente.Apellido));
+            command.Parameters.Add(new OracleParameter("nombres", paciente.Nombres));
+            command.Parameters.Add(new OracleParameter("apellidos", paciente.Apellidos));
             command.Parameters.Add(new OracleParameter("cedula", paciente.Cedula));
             command.Parameters.Add(new OracleParameter("fechaNacimiento", paciente.FechaNacimiento));
             command.Parameters.Add(new OracleParameter("telefono", paciente.Telefono));
@@ -89,7 +89,7 @@ namespace DentisAppAPI.Services
             using var connection = new OracleConnection(_connectionString);
             connection.Open();
 
-            string query = "DELETE FROM PACIENTES WHERE IDPACIENTE=:idPaciente";
+            string query = "DELETE FROM PACIENTES WHERE ID_PACIENTE=:idPaciente";
 
             using var command = new OracleCommand(query, connection);
             command.Parameters.Add(new OracleParameter("idPaciente", idPaciente));

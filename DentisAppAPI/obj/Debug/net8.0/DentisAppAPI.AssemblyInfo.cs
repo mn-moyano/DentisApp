@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DentisAppAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d1257faecfea0994d629b5b3cc7ad446443f4b8c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c8cbeb7fa7a11adcafc4c0c8402087bc813c28f")]
 [assembly: System.Reflection.AssemblyProductAttribute("DentisAppAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DentisAppAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

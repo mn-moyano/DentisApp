@@ -104,7 +104,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Habilita la redirección a HTTPS (opcional en desarrollo local si usas HTTP puro)
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // El orden aquí es crítico para la seguridad y peticiones móviles
 app.UseCors("AllowAll");

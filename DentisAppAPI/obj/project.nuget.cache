@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "sgF3GK6IACQ=",
+  "dgSpecHash": "BvQv82UUNNU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
+  "projectFilePath": "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Personal\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
-    "C:\\Users\\Personal\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.29\\microsoft.aspnetcore.authentication.jwtbearer.8.0.29.nupkg.sha512",
+    "C:\\Users\\Personal\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.30\\microsoft.aspnetcore.authentication.jwtbearer.8.0.30.nupkg.sha512",
     "C:\\Users\\Personal\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
     "C:\\Users\\Personal\\.nuget\\packages\\microsoft.codeanalysis.analyzers\\3.3.4\\microsoft.codeanalysis.analyzers.3.3.4.nupkg.sha512",
     "C:\\Users\\Personal\\.nuget\\packages\\microsoft.codeanalysis.common\\4.5.0\\microsoft.codeanalysis.common.4.5.0.nupkg.sha512",

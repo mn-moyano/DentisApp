@@ -15,7 +15,7 @@
           }
         }
       },
-      "Microsoft.AspNetCore.Authentication.JwtBearer/8.0.29": {
+      "Microsoft.AspNetCore.Authentication.JwtBearer/8.0.30": {
         "type": "package",
         "dependencies": {
           "Microsoft.IdentityModel.Protocols.OpenIdConnect": "7.7.3"
@@ -1300,10 +1300,10 @@
         "logo.png"
       ]
     },
-    "Microsoft.AspNetCore.Authentication.JwtBearer/8.0.29": {
-      "sha512": "U9mJXthGFk2uZb8ECOKEuJXyIGxub1l5zx82dZ3q3t+8oRZsinzyDRdomL13tb+/EIT6/3HAZ6pbWQwf7enrFA==",
+    "Microsoft.AspNetCore.Authentication.JwtBearer/8.0.30": {
+      "sha512": "ltmPwCpzuO29cl6H9w1QHIZ7J+3mnLcUAUH1l9Fgj0bY7vydv76uE5qSYGo96sSQgT98JYbleMBeEGIhjkr7aQ==",
       "type": "package",
-      "path": "microsoft.aspnetcore.authentication.jwtbearer/8.0.29",
+      "path": "microsoft.aspnetcore.authentication.jwtbearer/8.0.30",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
@@ -1311,7 +1311,7 @@
         "THIRD-PARTY-NOTICES.TXT",
         "lib/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll",
         "lib/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.xml",
-        "microsoft.aspnetcore.authentication.jwtbearer.8.0.29.nupkg.sha512",
+        "microsoft.aspnetcore.authentication.jwtbearer.8.0.30.nupkg.sha512",
         "microsoft.aspnetcore.authentication.jwtbearer.nuspec"
       ]
     },
@@ -3776,11 +3776,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
+      "projectUniqueName": "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
       "projectName": "DentisAppAPI",
-      "projectPath": "C:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
+      "projectPath": "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
       "packagesPath": "C:\\Users\\Personal\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Personal\\Documents\\MADELYN\\UEA\\QUINTO SEMESTRE\\APLICACIONES MÓVILES\\DentisApp\\DentisAppAPI\\obj\\",
+      "outputPath": "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
