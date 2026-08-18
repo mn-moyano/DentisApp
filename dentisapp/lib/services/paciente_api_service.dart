@@ -1,39 +1,51 @@
 import 'dart:convert';
+
 import 'package:http/http.dart' as http;
+
 import '../models/paciente.dart';
 
 class PacienteApiService {
-  // URL de la API definida mediante variable de entorno.
-  static const String apiBaseUrl = String.fromEnvironment(
+  // URL de la API.
+  static const String apiBaseUrl =
+      String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.0.2.2:5133',
+    defaultValue: 'http://localhost:5133',
   );
 
   // Endpoint de pacientes.
-  String get baseUrl => '$apiBaseUrl/api/pacientes';
+  String get baseUrl =>
+      '$apiBaseUrl/api/pacientes';
 
-  /// Obtener lista de pacientes
+  /// Obtener lista de pacientes.
   Future<List<Paciente>> obtenerPacientes() async {
-    final response = await http.get(Uri.parse(baseUrl));
+    final response =
+        await http.get(Uri.parse(baseUrl));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> respuesta =
           jsonDecode(response.body);
 
-      final List<dynamic> data = respuesta['data'];
+      final List<dynamic> data =
+          respuesta['data'];
 
       return data
-          .map((json) => Paciente.fromJson(json))
+          .map(
+            (json) => Paciente.fromJson(json),
+          )
           .toList();
-    } else {
-      throw Exception(
-        "Error al obtener pacientes: ${response.statusCode} - ${response.body}",
-      );
     }
+
+    throw Exception(
+      'Error al obtener pacientes: '
+      '${response.statusCode} - '
+      '${response.body}',
+    );
   }
 
-  /// Obtener paciente por ID
-  Future<Paciente?> obtenerPacientePorId(int id) async {
+  /// Obtener paciente por ID.
+  Future<Paciente?> obtenerPacientePorId(
+    int id,
+  ) async {
     final response = await http.get(
       Uri.parse('$baseUrl/$id'),
     );
@@ -42,7 +54,9 @@ class PacienteApiService {
       final Map<String, dynamic> respuesta =
           jsonDecode(response.body);
 
-      return Paciente.fromJson(respuesta['data']);
+      return Paciente.fromJson(
+        respuesta['data'],
+      );
     }
 
     if (response.statusCode == 404) {
@@ -50,54 +64,103 @@ class PacienteApiService {
     }
 
     throw Exception(
-      "Error al obtener paciente: ${response.statusCode}",
+      'Error al obtener paciente: '
+      '${response.statusCode}',
     );
   }
 
-  /// Crear paciente
-  Future<Paciente?> crearPaciente(Paciente paciente) async {
+  /// Crear paciente.
+  Future<Paciente?> crearPaciente(
+    Paciente paciente,
+  ) async {
     final response = await http.post(
       Uri.parse(baseUrl),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: jsonEncode(paciente.toJson()),
+      body: jsonEncode(
+        paciente.toJson(),
+      ),
     );
 
-    if (response.statusCode == 201) {
+    print(
+      'STATUS CREAR PACIENTE: '
+      '${response.statusCode}',
+    );
+
+    print(
+      'RESPUESTA CREAR PACIENTE: '
+      '${response.body}',
+    );
+
+    if (response.statusCode == 200 ||
+        response.statusCode == 201) {
       final Map<String, dynamic> respuesta =
           jsonDecode(response.body);
 
-      return Paciente.fromJson(respuesta['data']);
+      return Paciente.fromJson(
+        respuesta['data'],
+      );
     }
 
     return null;
   }
 
-  /// Actualizar paciente
+  /// Actualizar paciente.
   Future<Paciente?> actualizarPaciente(
     Paciente paciente,
   ) async {
+    final url =
+        '$baseUrl/${paciente.idPaciente}';
+
+    print('========== ACTUALIZAR PACIENTE ==========');
+    print('URL: $url');
+    print('ID: ${paciente.idPaciente}');
+    print(
+      'JSON ENVIADO: '
+      '${paciente.toJson()}',
+    );
+
     final response = await http.put(
-      Uri.parse('$baseUrl/${paciente.idPaciente}'),
+      Uri.parse(url),
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: jsonEncode(paciente.toJson()),
+      body: jsonEncode(
+        paciente.toJson(),
+      ),
+    );
+
+    print(
+      'STATUS ACTUALIZAR: '
+      '${response.statusCode}',
+    );
+
+    print(
+      'RESPUESTA ACTUALIZAR: '
+      '${response.body}',
+    );
+
+    print(
+      '==========================================',
     );
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> respuesta =
           jsonDecode(response.body);
 
-      return Paciente.fromJson(respuesta['data']);
+      return Paciente.fromJson(
+        respuesta['data'],
+      );
     }
 
     return null;
   }
 
-  /// Eliminar paciente
-  Future<bool> eliminarPaciente(int id) async {
+  /// Eliminar paciente.
+  Future<bool> eliminarPaciente(
+    int id,
+  ) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/$id'),
     );

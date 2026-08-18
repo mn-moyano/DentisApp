@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'screens/home_screen.dart';
+import 'theme/app_theme.dart';
 
 /// Punto de entrada principal de la aplicación DentisApp.
 void main() {
@@ -15,10 +17,7 @@ class DentisApp extends StatelessWidget {
     return MaterialApp(
       title: 'DentisApp',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        // Se define el esquema de colores principal de la aplicación.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
+      theme: AppTheme.light,
       home: const HomeScreen(),
     );
   }

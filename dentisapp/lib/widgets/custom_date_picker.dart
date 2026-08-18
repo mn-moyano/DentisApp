@@ -10,8 +10,11 @@ class CustomDatePicker extends StatelessWidget {
     required this.label,
   });
 
-  Future<void> _seleccionarFecha(BuildContext context) async {
-    final DateTime? fechaSeleccionada = await showDatePicker(
+  Future<void> _seleccionarFecha(
+    BuildContext context,
+  ) async {
+    final DateTime? fechaSeleccionada =
+        await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
       firstDate: DateTime(1900),
@@ -19,7 +22,21 @@ class CustomDatePicker extends StatelessWidget {
     );
 
     if (fechaSeleccionada != null) {
-      controller.text = "${fechaSeleccionada.day}/${fechaSeleccionada.month}/${fechaSeleccionada.year}";
+      final String dia =
+          fechaSeleccionada.day
+              .toString()
+              .padLeft(2, '0');
+
+      final String mes =
+          fechaSeleccionada.month
+              .toString()
+              .padLeft(2, '0');
+
+      final String anio =
+          fechaSeleccionada.year.toString();
+
+      // Guardamos internamente en formato YYYY-MM-DD.
+      controller.text = '$anio-$mes-$dia';
     }
   }
 
@@ -33,7 +50,8 @@ class CustomDatePicker extends StatelessWidget {
         onTap: () => _seleccionarFecha(context),
         decoration: InputDecoration(
           labelText: label,
-          suffixIcon: const Icon(Icons.calendar_month),
+          suffixIcon:
+              const Icon(Icons.calendar_month),
           border: const OutlineInputBorder(),
         ),
       ),

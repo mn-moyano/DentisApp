@@ -20,35 +20,60 @@ class Paciente {
     this.direccion,
   });
 
-  /// Convierte un objeto Paciente en JSON
+  /// Convierte un objeto Paciente en JSON.
   Map<String, dynamic> toJson() {
-    return {
-      'idPaciente': idPaciente,
-      'nombre': nombres,
-      'apellido': apellidos,
+    final Map<String, dynamic> data = {
+      'nombres': nombres,
+      'apellidos': apellidos,
       'cedula': cedula,
       'fechaNacimiento': fechaNacimiento?.toIso8601String(),
       'telefono': telefono,
-      'direccion': direccion,
       'correo': correo,
+      'direccion': direccion,
     };
+
+    // El ID solamente se envía cuando el paciente ya existe.
+    if (idPaciente != null) {
+      data['idPaciente'] = idPaciente;
+    }
+
+    return data;
   }
 
-  /// Convierte JSON en objeto Paciente
+  /// Convierte JSON en objeto Paciente.
   factory Paciente.fromJson(Map<String, dynamic> json) {
     return Paciente(
-      idPaciente: json['idPaciente'] ?? json['id_paciente'],
-      nombres: json['nombre'] ?? '',
-      apellidos: json['apellido'] ?? '',
-      cedula: json['cedula'] ?? '',
-      fechaNacimiento: json['fechaNacimiento'] != null
-          ? DateTime.parse(json['fechaNacimiento'])
-          : (json['fecha_nacimiento'] != null
-              ? DateTime.parse(json['fecha_nacimiento'])
-              : null),
-      telefono: json['telefono'],
-      direccion: json['direccion'],
-      correo: json['correo'],
+      idPaciente:
+          json['idPaciente'] ?? json['id_paciente'],
+
+      nombres:
+          json['nombres'] ?? json['nombre'] ?? '',
+
+      apellidos:
+          json['apellidos'] ?? json['apellido'] ?? '',
+
+      cedula:
+          json['cedula'] ?? '',
+
+      fechaNacimiento:
+          json['fechaNacimiento'] != null
+              ? DateTime.tryParse(
+                  json['fechaNacimiento'].toString(),
+                )
+              : (json['fecha_nacimiento'] != null
+                  ? DateTime.tryParse(
+                      json['fecha_nacimiento'].toString(),
+                    )
+                  : null),
+
+      telefono:
+          json['telefono']?.toString(),
+
+      correo:
+          json['correo']?.toString(),
+
+      direccion:
+          json['direccion']?.toString(),
     );
   }
 }
