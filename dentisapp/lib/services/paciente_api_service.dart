@@ -6,7 +6,7 @@ class PacienteApiService {
   // URL de la API definida mediante variable de entorno.
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:5133',
+    defaultValue: 'http://10.0.2.2:5133',
   );
 
   // Endpoint de pacientes.
