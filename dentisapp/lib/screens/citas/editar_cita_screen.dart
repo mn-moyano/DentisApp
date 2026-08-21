@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../widgets/custom_textfield.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_date_picker.dart';
 
 class EditarCitaScreen extends StatelessWidget {
   final Map<String, dynamic> cita;
@@ -10,73 +13,42 @@ class EditarCitaScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fechaController =
-        TextEditingController(text: cita['fecha']);
-
-    final pacienteController =
-        TextEditingController(text: cita['paciente']);
-
-    final odontologoController =
-        TextEditingController(text: cita['odontologo']);
-
-    final estadoController =
-        TextEditingController(text: cita['estado']);
+    // Los controladores se inicializan con los datos de la cita existente
+    final fechaController = TextEditingController(text: cita['fecha']);
+    final pacienteController = TextEditingController(text: cita['paciente']);
+    final odontologoController = TextEditingController(text: cita['odontologo']);
+    final estadoController = TextEditingController(text: cita['estado']);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Editar Cita'),
       ),
-
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-
-            TextField(
+            CustomDatePicker(
               controller: fechaController,
-              decoration: const InputDecoration(
-                labelText: 'Fecha',
-                border: OutlineInputBorder(),
-              ),
+              label: 'Fecha de la Cita',
             ),
-
-            const SizedBox(height: 15),
-
-            TextField(
+            CustomTextField(
               controller: pacienteController,
-              decoration: const InputDecoration(
-                labelText: 'Paciente',
-                border: OutlineInputBorder(),
-              ),
+              label: 'Paciente',
             ),
-
-            const SizedBox(height: 15),
-
-            TextField(
+            CustomTextField(
               controller: odontologoController,
-              decoration: const InputDecoration(
-                labelText: 'Odontólogo',
-                border: OutlineInputBorder(),
-              ),
+              label: 'Odontólogo',
             ),
-
-            const SizedBox(height: 15),
-
-            TextField(
+            CustomTextField(
               controller: estadoController,
-              decoration: const InputDecoration(
-                labelText: 'Estado',
-                border: OutlineInputBorder(),
-              ),
+              label: 'Estado',
             ),
-
-            const SizedBox(height: 30),
-
-            ElevatedButton(
+            const SizedBox(height: 16),
+            CustomButton(
+              texto: 'Guardar Cambios',
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Guardar Cambios'),
             ),
           ],
         ),

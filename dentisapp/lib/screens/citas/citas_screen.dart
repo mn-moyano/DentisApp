@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'nueva_cita_screen.dart';
 import 'editar_cita_screen.dart';
+import '../../widgets/custom_search_bar.dart';
+import '../../widgets/custom_card.dart';
+import '../../widgets/async_state_view.dart';
 
 class CitasScreen extends StatelessWidget {
   const CitasScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Controlador obligatorio para el CustomSearchBar
+    final searchController = TextEditingController();
+
+    // Datos simulados (próximamente vendrán de la API)
     final citas = [
       {
         'id_cita': 1,
@@ -41,73 +48,64 @@ class CitasScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Citas'),
       ),
-
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Buscar cita...',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
+          CustomSearchBar(
+            controller: searchController,
+            hint: 'Buscar cita por paciente u odontólogo...',
+            onChanged: (value) {
+              // Lógica de filtrado futura
+            },
           ),
-
           Expanded(
-            child: ListView.builder(
-              itemCount: citas.length,
-              itemBuilder: (context, index) {
-                final cita = citas[index];
-
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-
-                  child: ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.calendar_today),
-                    ),
-
-                    title: Text(
-                      cita['paciente'].toString(),
-                    ),
-
-                    subtitle: Text(
-                      'Fecha: ${cita['fecha']}\n'
-                      'Odontólogo: ${cita['odontologo']}\n'
-                      'Estado: ${cita['estado']}',
-                    ),
-
-                    isThreeLine: true,
-
-                    trailing: const Icon(
-                      Icons.arrow_forward_ios,
-                    ),
-
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => EditarCitaScreen(
-                            cita: cita,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                );
+            child: AsyncStateView(
+              isLoading: false, 
+              error: null, // Se cambia a un String cuando haya un error de la API
+              isEmpty: citas.isEmpty,
+              onRetry: () {
+                // Lógica para recargar
               },
+              child: ListView.builder(
+                itemCount: citas.length,
+                itemBuilder: (context, index) {
+                  final cita = citas[index];
+
+                  // CustomCard ahora recibe el ListTile como su 'child'
+                  return CustomCard(
+                    child: ListTile(
+                      leading: const CircleAvatar(
+                        child: Icon(Icons.calendar_today),
+                      ),
+                      title: Text(
+                        cita['paciente'].toString(),
+                      ),
+                      subtitle: Text(
+                        'Fecha: ${cita['fecha']}\n'
+                        'Odontólogo: ${cita['odontologo']}\n'
+                        'Estado: ${cita['estado']}',
+                      ),
+                      isThreeLine: true,
+                      trailing: const Icon(
+                        Icons.arrow_forward_ios,
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EditarCitaScreen(
+                              cita: cita,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
           ),
         ],
       ),
-
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
