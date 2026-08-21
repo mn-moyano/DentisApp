@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Rafael Lopez\\Documents\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj": {}
+    "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Rafael Lopez\\Documents\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj": {
+    "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Rafael Lopez\\Documents\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
+        "projectUniqueName": "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
         "projectName": "DentisAppAPI",
-        "projectPath": "C:\\Users\\Rafael Lopez\\Documents\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
-        "packagesPath": "C:\\Users\\Rafael Lopez\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Rafael Lopez\\Documents\\DentisApp\\DentisAppAPI\\obj\\",
+        "projectPath": "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\DentisAppAPI.csproj",
+        "packagesPath": "C:\\Users\\Personal\\.nuget\\packages\\",
+        "outputPath": "C:\\FlutterProjects\\DentisApp\\DentisAppAPI\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Rafael Lopez\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\Personal\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
