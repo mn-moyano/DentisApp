@@ -15,7 +15,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Grupo 3 DentisApp'),
+        title: Text('DentisApp'),
       ),
       
       // Lista de opciones del sistema para navegar entre secciones.

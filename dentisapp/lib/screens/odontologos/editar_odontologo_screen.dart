@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-class EditarOdontologoScreen extends StatelessWidget {
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_textfield.dart';
 
+class EditarOdontologoScreen extends StatefulWidget {
   final Map<String, dynamic> odontologo;
 
   const EditarOdontologoScreen({
@@ -10,24 +12,56 @@ class EditarOdontologoScreen extends StatelessWidget {
   });
 
   @override
+  State<EditarOdontologoScreen> createState() =>
+      _EditarOdontologoScreenState();
+}
+
+class _EditarOdontologoScreenState
+    extends State<EditarOdontologoScreen> {
+  late TextEditingController nombreController;
+  late TextEditingController especialidadController;
+  late TextEditingController telefonoController;
+  late TextEditingController correoController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    nombreController = TextEditingController(
+      text:
+          '${widget.odontologo['nombres'] ?? ''} '
+          '${widget.odontologo['apellidos'] ?? ''}',
+    );
+
+    especialidadController = TextEditingController(
+      text: widget.odontologo['especialidad']?.toString() ?? '',
+    );
+
+    telefonoController = TextEditingController(
+      text: widget.odontologo['telefono']?.toString() ?? '',
+    );
+
+    correoController = TextEditingController(
+      text: widget.odontologo['correo']?.toString() ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    nombreController.dispose();
+    especialidadController.dispose();
+    telefonoController.dispose();
+    correoController.dispose();
+
+    super.dispose();
+  }
+
+  void guardarCambios() {
+    Navigator.pop(context, true);
+  }
+
+  @override
   Widget build(BuildContext context) {
-
-    final nombreController =
-        TextEditingController(
-            text: odontologo['nombre']);
-
-    final especialidadController =
-        TextEditingController(
-            text: odontologo['especialidad']);
-
-    final telefonoController =
-        TextEditingController(
-            text: odontologo['telefono']);
-
-    final correoController =
-        TextEditingController(
-            text: odontologo['correo']);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Editar Odontólogo'),
@@ -35,54 +69,37 @@ class EditarOdontologoScreen extends StatelessWidget {
 
       body: Padding(
         padding: const EdgeInsets.all(16),
+
         child: ListView(
           children: [
-
-            TextField(
+            CustomTextField(
               controller: nombreController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre',
-                border: OutlineInputBorder(),
-              ),
+              label: 'Nombre',
             ),
 
-            const SizedBox(height: 15),
-
-            TextField(
+            CustomTextField(
               controller: especialidadController,
-              decoration: const InputDecoration(
-                labelText: 'Especialidad',
-                border: OutlineInputBorder(),
-              ),
+              label: 'Especialidad',
             ),
 
-            const SizedBox(height: 15),
-
-            TextField(
+            CustomTextField(
               controller: telefonoController,
-              decoration: const InputDecoration(
-                labelText: 'Teléfono',
-                border: OutlineInputBorder(),
-              ),
+              label: 'Teléfono',
+              keyboardType: TextInputType.phone,
             ),
 
-            const SizedBox(height: 15),
-
-            TextField(
+            CustomTextField(
               controller: correoController,
-              decoration: const InputDecoration(
-                labelText: 'Correo',
-                border: OutlineInputBorder(),
-              ),
+              label: 'Correo',
+              keyboardType: TextInputType.emailAddress,
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
 
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Guardar Cambios'),
+            CustomButton(
+              texto: 'Guardar Cambios',
+              icono: Icons.save,
+              onPressed: guardarCambios,
             ),
           ],
         ),

@@ -1,9 +1,43 @@
 import 'package:flutter/material.dart';
+
 import '../../widgets/custom_button.dart';
+import '../../widgets/custom_textfield.dart';
 
-
-class NuevoOdontologoScreen extends StatelessWidget {
+class NuevoOdontologoScreen extends StatefulWidget {
   const NuevoOdontologoScreen({super.key});
+
+  @override
+  State<NuevoOdontologoScreen> createState() =>
+      _NuevoOdontologoScreenState();
+}
+
+class _NuevoOdontologoScreenState
+    extends State<NuevoOdontologoScreen> {
+  final TextEditingController nombreController =
+      TextEditingController();
+
+  final TextEditingController especialidadController =
+      TextEditingController();
+
+  final TextEditingController telefonoController =
+      TextEditingController();
+
+  final TextEditingController correoController =
+      TextEditingController();
+
+  @override
+  void dispose() {
+    nombreController.dispose();
+    especialidadController.dispose();
+    telefonoController.dispose();
+    correoController.dispose();
+
+    super.dispose();
+  }
+
+  void guardarOdontologo() {
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,53 +48,37 @@ class NuevoOdontologoScreen extends StatelessWidget {
 
       body: Padding(
         padding: const EdgeInsets.all(16),
+
         child: ListView(
           children: [
-
-            const TextField(
-              decoration: InputDecoration(
-                labelText: 'Nombre',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: nombreController,
+              label: 'Nombre',
             ),
 
-            const SizedBox(height: 15),
-
-            const TextField(
-              decoration: InputDecoration(
-                labelText: 'Especialidad',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: especialidadController,
+              label: 'Especialidad',
             ),
 
-            const SizedBox(height: 15),
-
-            const TextField(
-              decoration: InputDecoration(
-                labelText: 'Teléfono',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: telefonoController,
+              label: 'Teléfono',
+              keyboardType: TextInputType.phone,
             ),
 
-            const SizedBox(height: 15),
-
-            const TextField(
-              decoration: InputDecoration(
-                labelText: 'Correo',
-                border: OutlineInputBorder(),
-              ),
+            CustomTextField(
+              controller: correoController,
+              label: 'Correo',
+              keyboardType: TextInputType.emailAddress,
             ),
 
-            const SizedBox(height: 15),
+            const SizedBox(height: 20),
 
             CustomButton(
               texto: 'Guardar Odontólogo',
               icono: Icons.save,
-              onPressed: () {
-              
-              // Aquí luego llamaremos al OdontólogoService
-                Navigator.pop(context);
-              },
+              onPressed: guardarOdontologo,
             ),
           ],
         ),
