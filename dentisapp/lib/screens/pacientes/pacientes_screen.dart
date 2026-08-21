@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/paciente.dart';
 import '../../services/paciente_api_service.dart';
+import '../../widgets/async_state_view.dart';
 import '../../widgets/custom_card.dart';
 import '../../widgets/custom_search_bar.dart';
 import 'nuevo_paciente_screen.dart';
@@ -31,6 +32,10 @@ class _PacientesScreenState extends State<PacientesScreen> {
   void initState() {
     super.initState();
 
+    buscarController.addListener(() {
+      setState(() {});
+    });
+
     cargarPacientes();
   }
 
@@ -56,6 +61,33 @@ class _PacientesScreenState extends State<PacientesScreen> {
     }
   }
 
+  List<Paciente> get pacientesFiltrados {
+    final texto = buscarController.text.trim().toLowerCase();
+
+    if (texto.isEmpty) {
+      return pacientes;
+    }
+
+    return pacientes.where((paciente) {
+      final nombre =
+          '${paciente.nombres} ${paciente.apellidos}'.toLowerCase();
+
+      final cedula =
+          paciente.cedula.toLowerCase();
+
+      final telefono =
+          (paciente.telefono ?? '').toLowerCase();
+
+      final correo =
+          (paciente.correo ?? '').toLowerCase();
+
+      return nombre.contains(texto) ||
+          cedula.contains(texto) ||
+          telefono.contains(texto) ||
+          correo.contains(texto);
+    }).toList();
+  }
+
   @override
   void dispose() {
     buscarController.dispose();
@@ -78,14 +110,22 @@ class _PacientesScreenState extends State<PacientesScreen> {
           ),
 
           Expanded(
-            child: construirContenido(),
+            child: AsyncStateView(
+              isLoading: cargando,
+              error: error != null
+                  ? 'No se pudieron cargar los pacientes.\n\n$error'
+                  : null,
+              isEmpty: !cargando &&
+                  error == null &&
+                  pacientesFiltrados.isEmpty,
+              onRetry: cargarPacientes,
+              child: construirLista(),
+            ),
           ),
         ],
       ),
 
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-
         onPressed: () async {
           await Navigator.push(
             context,
@@ -96,75 +136,38 @@ class _PacientesScreenState extends State<PacientesScreen> {
 
           cargarPacientes();
         },
+        child: const Icon(Icons.add),
       ),
     );
   }
 
-  Widget construirContenido() {
-    if (cargando) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    }
+  Widget construirLista() {
+    final lista = pacientesFiltrados;
 
-    if (error != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 50,
-              ),
-
-              const SizedBox(height: 16),
-
-              const Text(
-                'No se pudieron cargar los pacientes.',
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 10),
-
-              Text(
-                error!,
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 20),
-
-              ElevatedButton(
-                onPressed: cargarPacientes,
-                child: const Text('Reintentar'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (pacientes.isEmpty) {
+    if (lista.isEmpty) {
       return const Center(
         child: Text(
-          'No hay pacientes registrados.',
+          'No se encontraron pacientes.',
+          textAlign: TextAlign.center,
         ),
       );
     }
 
     return ListView.builder(
-      itemCount: pacientes.length,
-
+      padding: const EdgeInsets.only(
+        top: 8,
+        bottom: 80,
+      ),
+      itemCount: lista.length,
       itemBuilder: (context, index) {
-        final paciente = pacientes[index];
+        final paciente = lista[index];
 
         return CustomCard(
           child: ListTile(
             leading: CircleAvatar(
               child: Text(
                 paciente.nombres.isNotEmpty
-                    ? paciente.nombres[0]
+                    ? paciente.nombres[0].toUpperCase()
                     : '?',
               ),
             ),

@@ -80,7 +80,9 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
       if (pacienteCreado != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Paciente registrado correctamente.'),
+            content: Text(
+              'Paciente registrado correctamente.',
+            ),
           ),
         );
 
@@ -88,7 +90,9 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('No se pudo registrar el paciente.'),
+            content: Text(
+              'No se pudo registrar el paciente.',
+            ),
           ),
         );
       }
@@ -97,7 +101,9 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al guardar paciente: $e'),
+          content: Text(
+            'Error al guardar paciente: $e',
+          ),
         ),
       );
     } finally {
@@ -128,8 +134,10 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
       appBar: AppBar(
         title: const Text('Nuevo Paciente'),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
+
         child: ListView(
           children: [
             CustomTextField(
@@ -177,7 +185,9 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
                   ? 'Guardando...'
                   : 'Guardar Paciente',
               icono: Icons.save,
-              onPressed: guardando ? () {} : guardarPaciente,
+              onPressed: guardando
+                  ? null
+                  : guardarPaciente,
             ),
           ],
         ),

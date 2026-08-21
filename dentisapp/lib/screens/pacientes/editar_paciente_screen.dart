@@ -51,8 +51,7 @@ class _EditarPacienteScreenState
       text: widget.paciente.cedula,
     );
 
-    fechaNacimientoController =
-        TextEditingController(
+    fechaNacimientoController = TextEditingController(
       text: widget.paciente.fechaNacimiento != null
           ? _formatearFecha(
               widget.paciente.fechaNacimiento!,
@@ -75,11 +74,8 @@ class _EditarPacienteScreenState
 
   /// Convierte DateTime a YYYY-MM-DD.
   String _formatearFecha(DateTime fecha) {
-    final dia =
-        fecha.day.toString().padLeft(2, '0');
-
-    final mes =
-        fecha.month.toString().padLeft(2, '0');
+    final dia = fecha.day.toString().padLeft(2, '0');
+    final mes = fecha.month.toString().padLeft(2, '0');
 
     return '${fecha.year}-$mes-$dia';
   }
@@ -118,37 +114,29 @@ class _EditarPacienteScreenState
         // Mantener el ID original.
         idPaciente: widget.paciente.idPaciente,
 
-        nombres:
-            nombreController.text.trim(),
+        nombres: nombreController.text.trim(),
 
-        apellidos:
-            apellidoController.text.trim(),
+        apellidos: apellidoController.text.trim(),
 
-        cedula:
-            cedulaController.text.trim(),
+        cedula: cedulaController.text.trim(),
 
-        fechaNacimiento:
-            fechaNacimiento,
+        fechaNacimiento: fechaNacimiento,
 
-        telefono:
-            telefonoController.text.trim().isEmpty
-                ? null
-                : telefonoController.text.trim(),
+        telefono: telefonoController.text.trim().isEmpty
+            ? null
+            : telefonoController.text.trim(),
 
-        correo:
-            correoController.text.trim().isEmpty
-                ? null
-                : correoController.text.trim(),
+        correo: correoController.text.trim().isEmpty
+            ? null
+            : correoController.text.trim(),
 
-        direccion:
-            direccionController.text.trim().isEmpty
-                ? null
-                : direccionController.text.trim(),
+        direccion: direccionController.text.trim().isEmpty
+            ? null
+            : direccionController.text.trim(),
       );
 
       final resultado =
-          await pacienteApiService
-              .actualizarPaciente(
+          await pacienteApiService.actualizarPaciente(
         pacienteActualizado,
       );
 
@@ -163,7 +151,6 @@ class _EditarPacienteScreenState
           ),
         );
 
-        // true significa que hubo cambios.
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -215,17 +202,14 @@ class _EditarPacienteScreenState
 
       body: Padding(
         padding: const EdgeInsets.all(16),
+
         child: ListView(
           children: [
-            TextField(
-              controller: TextEditingController(
-                text: widget.paciente.idPaciente
-                    ?.toString() ??
-                    '',
-              ),
+            TextFormField(
+              initialValue:
+                  widget.paciente.idPaciente?.toString() ?? '',
               readOnly: true,
-              decoration:
-                  const InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'ID Paciente',
                 border: OutlineInputBorder(),
               ),
@@ -246,28 +230,24 @@ class _EditarPacienteScreenState
             CustomTextField(
               controller: cedulaController,
               label: 'Cédula',
-              keyboardType:
-                  TextInputType.number,
+              keyboardType: TextInputType.number,
             ),
 
             CustomDatePicker(
-              controller:
-                  fechaNacimientoController,
+              controller: fechaNacimientoController,
               label: 'Fecha de nacimiento',
             ),
 
             CustomTextField(
               controller: telefonoController,
               label: 'Teléfono',
-              keyboardType:
-                  TextInputType.phone,
+              keyboardType: TextInputType.phone,
             ),
 
             CustomTextField(
               controller: correoController,
               label: 'Correo electrónico',
-              keyboardType:
-                  TextInputType.emailAddress,
+              keyboardType: TextInputType.emailAddress,
             ),
 
             CustomTextField(
@@ -283,7 +263,7 @@ class _EditarPacienteScreenState
                   : 'Guardar Cambios',
               icono: Icons.save,
               onPressed: guardando
-                  ? () {}
+                  ? null
                   : guardarCambios,
             ),
           ],

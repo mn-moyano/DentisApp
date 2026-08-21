@@ -1,5 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_radius.dart';
+import '../theme/app_spacing.dart';
+
+/// Tarjeta reutilizable de DentisApp.
+///
+/// El contenido se recibe mediante [child], lo que permite utilizar
+/// el componente en diferentes módulos de la aplicación sin acoplarlo
+/// a una entidad o pantalla específica.
 class CustomCard extends StatelessWidget {
   final Widget child;
 
@@ -11,10 +19,15 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 3,
+      elevation: 1,
       margin: const EdgeInsets.symmetric(
-        horizontal: 10,
-        vertical: 5,
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(
+          AppRadius.md,
+        ),
       ),
       child: child,
     );
