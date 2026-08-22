@@ -1,0 +1,34 @@
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+coverage/
+
+# Android / iOS
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+**/ios/Flutter/.last_build_id
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# .NET
+[Bb]in/
+[Oo]bj/
+
+# DentisApp API
+DentisAppAPI/bin/
+DentisAppAPI/obj/
+
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
