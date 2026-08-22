@@ -12,18 +12,27 @@ public class Cita
     [JsonPropertyName("idCita")]
     public int IdCita { get; set; }
 
-    [Required(ErrorMessage = "La fecha de la cita es obligatoria.")]
-    [Column("FECHA")]
-    [JsonPropertyName("fecha")]
-    public DateTime Fecha { get; set; }
+    [Required(ErrorMessage = "La fecha y hora de la cita son obligatorias.")]
+    [Column("FECHA_HORA")]
+    [JsonPropertyName("fechaHora")]
+    public DateTime FechaHora { get; set; }
+
+    [Required(ErrorMessage = "El motivo es obligatorio.")]
+    [StringLength(200)]
+    [Column("MOTIVO")]
+    [JsonPropertyName("motivo")]
+    public string Motivo { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "El estado es obligatorio.")]
-    [StringLength(20)]
-    [RegularExpression("Programada|Atendida|Cancelada",
-        ErrorMessage = "El estado debe ser Programada, Atendida o Cancelada.")]
+    [StringLength(15)]
+    [RegularExpression(
+        "Programada|Atendida|Cancelada|Reprogramada",
+        ErrorMessage =
+            "El estado debe ser Programada, Atendida, Cancelada o Reprogramada."
+    )]
     [Column("ESTADO")]
     [JsonPropertyName("estado")]
-    public string Estado { get; set; } = string.Empty;
+    public string Estado { get; set; } = "Programada";
 
     [Required]
     [Column("ID_PACIENTE")]
@@ -35,17 +44,16 @@ public class Cita
     [JsonPropertyName("idOdontologo")]
     public int IdOdontologo { get; set; }
 
-    // ==========================
-    // Propiedades de navegación
-    // ==========================
-
+    // Relaciones
     [ForeignKey(nameof(IdPaciente))]
     public Paciente? Paciente { get; set; }
 
     [ForeignKey(nameof(IdOdontologo))]
     public Odontologo? Odontologo { get; set; }
 
-    public ICollection<Pago> Pagos { get; set; } = new List<Pago>();
+    public ICollection<Pago> Pagos { get; set; }
+        = new List<Pago>();
 
-    public ICollection<CitaTratamiento> CitaTratamientos { get; set; } = new List<CitaTratamiento>();
+    public ICollection<CitaTratamiento> CitaTratamientos { get; set; }
+        = new List<CitaTratamiento>();
 }

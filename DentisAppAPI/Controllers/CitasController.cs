@@ -41,7 +41,7 @@ namespace DentisAppAPI.Controllers
                         .Include(c => c.Paciente)
                         .Include(c => c.Odontologo)
                         .AsNoTracking()
-                        .OrderBy(c => c.Fecha)
+                        .OrderBy(c => c.FechaHora)
                         .ToListAsync();
 
                     _cache.Set(
@@ -138,7 +138,7 @@ namespace DentisAppAPI.Controllers
                 .Include(c => c.Paciente)
                 .Include(c => c.Odontologo)
                 .AsNoTracking()
-                .OrderBy(c => c.Fecha)
+                .OrderBy(c => c.FechaHora)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -292,18 +292,20 @@ namespace DentisAppAPI.Controllers
                 // Validar estado
                 if (cita.Estado != "Programada" &&
                     cita.Estado != "Atendida" &&
-                    cita.Estado != "Cancelada")
+                    cita.Estado != "Cancelada" &&
+                    cita.Estado != "Reprogramada")
                 {
                     return BadRequest(new ApiError
                     {
                         StatusCode = 400,
                         Timestamp = DateTime.Now,
-                        Message = "El estado debe ser Programada, Atendida o Cancelada."
+                        Message = "El estado debe ser Programada, Atendida, Cancelada o Reprogramada."
                     });
                 }
 
                 // Actualizar propiedades
-                citaExistente.Fecha = cita.Fecha;
+                citaExistente.FechaHora = cita.FechaHora;
+                citaExistente.Motivo = cita.Motivo;
                 citaExistente.Estado = cita.Estado;
                 citaExistente.IdPaciente = cita.IdPaciente;
                 citaExistente.IdOdontologo = cita.IdOdontologo;

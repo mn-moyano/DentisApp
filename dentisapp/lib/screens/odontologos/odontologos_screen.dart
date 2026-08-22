@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../models/odontologo.dart';
+import '../../services/odontologo_api_service.dart';
 import '../../widgets/custom_card.dart';
 import '../../widgets/custom_search_bar.dart';
 import 'nuevo_odontologo_screen.dart';
@@ -13,39 +15,18 @@ class OdontologosScreen extends StatefulWidget {
       _OdontologosScreenState();
 }
 
-class _OdontologosScreenState extends State<OdontologosScreen> {
+class _OdontologosScreenState
+    extends State<OdontologosScreen> {
   final TextEditingController buscarController =
       TextEditingController();
 
-  final List<Map<String, dynamic>> odontologos = [
-    {
-      'id_odontologo': 1,
-      'nombres': 'Andrés',
-      'apellidos': 'Morales',
-      'especialidad': 'Ortodoncia',
-      'telefono': '0991111111',
-      'correo': 'amorales@dentisapp.com',
-      'estado': 'Activo',
-    },
-    {
-      'id_odontologo': 2,
-      'nombres': 'Paola',
-      'apellidos': 'Vera',
-      'especialidad': 'Endodoncia',
-      'telefono': '0992222222',
-      'correo': 'pvera@dentisapp.com',
-      'estado': 'Activo',
-    },
-    {
-      'id_odontologo': 3,
-      'nombres': 'Daniel',
-      'apellidos': 'Castillo',
-      'especialidad': 'Odontopediatría',
-      'telefono': '0993333333',
-      'correo': 'dcastillo@dentisapp.com',
-      'estado': 'Inactivo',
-    },
-  ];
+  final OdontologoApiService apiService =
+      OdontologoApiService();
+
+  List<Odontologo> odontologos = [];
+
+  bool cargando = true;
+  String? error;
 
   @override
   void initState() {
@@ -54,6 +35,8 @@ class _OdontologosScreenState extends State<OdontologosScreen> {
     buscarController.addListener(() {
       setState(() {});
     });
+
+    cargarOdontologos();
   }
 
   @override
@@ -62,7 +45,33 @@ class _OdontologosScreenState extends State<OdontologosScreen> {
     super.dispose();
   }
 
-  List<Map<String, dynamic>> get odontologosFiltrados {
+  Future<void> cargarOdontologos() async {
+    setState(() {
+      cargando = true;
+      error = null;
+    });
+
+    try {
+      final resultado =
+          await apiService.obtenerOdontologos();
+
+      if (!mounted) return;
+
+      setState(() {
+        odontologos = resultado;
+        cargando = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        error = e.toString();
+        cargando = false;
+      });
+    }
+  }
+
+  List<Odontologo> get odontologosFiltrados {
     final texto =
         buscarController.text.trim().toLowerCase();
 
@@ -72,23 +81,17 @@ class _OdontologosScreenState extends State<OdontologosScreen> {
 
     return odontologos.where((odontologo) {
       final nombre =
-          '${odontologo['nombres']} ${odontologo['apellidos']}'
+          '${odontologo.nombres} ${odontologo.apellidos}'
               .toLowerCase();
 
       final especialidad =
-          odontologo['especialidad']
-              .toString()
-              .toLowerCase();
+          odontologo.especialidad.toLowerCase();
 
       final telefono =
-          odontologo['telefono']
-              .toString()
-              .toLowerCase();
+          odontologo.telefono?.toLowerCase() ?? '';
 
       final correo =
-          odontologo['correo']
-              .toString()
-              .toLowerCase();
+          odontologo.correo?.toLowerCase() ?? '';
 
       return nombre.contains(texto) ||
           especialidad.contains(texto) ||
@@ -114,81 +117,15 @@ class _OdontologosScreenState extends State<OdontologosScreen> {
           ),
 
           Expanded(
-            child: lista.isEmpty
-                ? const Center(
-                    child: Text(
-                      'No se encontraron odontólogos.',
-                    ),
-                  )
-                : ListView.builder(
-                    padding: const EdgeInsets.only(
-                      top: 8,
-                      bottom: 80,
-                    ),
-                    itemCount: lista.length,
-                    itemBuilder: (context, index) {
-                      final odontologo = lista[index];
-
-                      return CustomCard(
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            child: Text(
-                              odontologo['nombres']
-                                  .toString()[0]
-                                  .toUpperCase(),
-                            ),
-                          ),
-
-                          title: Text(
-                            '${odontologo['nombres']} '
-                            '${odontologo['apellidos']}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-
-                          subtitle: Text(
-                            'Especialidad: '
-                            '${odontologo['especialidad']}\n'
-                            'Teléfono: '
-                            '${odontologo['telefono']}\n'
-                            'Correo: '
-                            '${odontologo['correo']}\n'
-                            'Estado: '
-                            '${odontologo['estado']}',
-                          ),
-
-                          isThreeLine: true,
-
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                          ),
-
-                          onTap: () async {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) =>
-                                    EditarOdontologoScreen(
-                                  odontologo: odontologo,
-                                ),
-                              ),
-                            );
-
-                            setState(() {});
-                          },
-                        ),
-                      );
-                    },
-                  ),
+            child: _construirContenido(lista),
           ),
         ],
       ),
 
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await Navigator.push(
+          final resultado =
+              await Navigator.push<bool>(
             context,
             MaterialPageRoute(
               builder: (_) =>
@@ -196,10 +133,123 @@ class _OdontologosScreenState extends State<OdontologosScreen> {
             ),
           );
 
-          setState(() {});
+          if (resultado == true) {
+            cargarOdontologos();
+          }
         },
         child: const Icon(Icons.add),
       ),
+    );
+  }
+
+  Widget _construirContenido(
+    List<Odontologo> lista,
+  ) {
+    if (cargando) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+
+    if (error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.error_outline,
+                size: 48,
+              ),
+              const SizedBox(height: 12),
+              const Text(
+                'No se pudieron cargar los odontólogos.',
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: cargarOdontologos,
+                child: const Text('Reintentar'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (lista.isEmpty) {
+      return const Center(
+        child: Text(
+          'No se encontraron odontólogos.',
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(
+        top: 8,
+        bottom: 80,
+      ),
+      itemCount: lista.length,
+      itemBuilder: (context, index) {
+        final odontologo = lista[index];
+
+        return CustomCard(
+          child: ListTile(
+            leading: CircleAvatar(
+              child: Text(
+                odontologo.nombres
+                    .substring(0, 1)
+                    .toUpperCase(),
+              ),
+            ),
+
+            title: Text(
+              '${odontologo.nombres} '
+              '${odontologo.apellidos}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+
+            subtitle: Text(
+              'Especialidad: '
+              '${odontologo.especialidad}\n'
+              'Teléfono: '
+              '${odontologo.telefono ?? 'No registrado'}\n'
+              'Correo: '
+              '${odontologo.correo ?? 'No registrado'}\n'
+              'Estado: '
+              '${odontologo.estado}',
+            ),
+
+            isThreeLine: true,
+
+            trailing: const Icon(
+              Icons.arrow_forward_ios,
+            ),
+
+            onTap: () async {
+              final resultado =
+                  await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) =>
+                      EditarOdontologoScreen(
+                    odontologo: odontologo,
+                  ),
+                ),
+              );
+
+              if (resultado == true) {
+                cargarOdontologos();
+              }
+            },
+          ),
+        );
+      },
     );
   }
 }

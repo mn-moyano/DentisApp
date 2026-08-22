@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../models/cita.dart';
+import '../../services/cita_api_service.dart';
 import '../../widgets/async_state_view.dart';
 import '../../widgets/custom_card.dart';
 import '../../widgets/custom_search_bar.dart';
@@ -17,35 +19,12 @@ class _CitasScreenState extends State<CitasScreen> {
   final TextEditingController searchController =
       TextEditingController();
 
-  final List<Map<String, dynamic>> citas = [
-    {
-      'id_cita': 1,
-      'fecha': '20/07/2026 09:00',
-      'estado': 'Programada',
-      'id_paciente': 1,
-      'paciente': 'Juan Pérez',
-      'id_odontologo': 1,
-      'odontologo': 'Andrés Morales',
-    },
-    {
-      'id_cita': 2,
-      'fecha': '20/07/2026 11:00',
-      'estado': 'Atendida',
-      'id_paciente': 2,
-      'paciente': 'María Gómez',
-      'id_odontologo': 2,
-      'odontologo': 'Paola Vera',
-    },
-    {
-      'id_cita': 3,
-      'fecha': '21/07/2026 15:30',
-      'estado': 'Cancelada',
-      'id_paciente': 3,
-      'paciente': 'Carlos Rodríguez',
-      'id_odontologo': 1,
-      'odontologo': 'Andrés Morales',
-    },
-  ];
+  final CitaApiService _apiService = CitaApiService();
+
+  List<Cita> citas = [];
+
+  bool isLoading = true;
+  String? error;
 
   @override
   void initState() {
@@ -54,6 +33,8 @@ class _CitasScreenState extends State<CitasScreen> {
     searchController.addListener(() {
       setState(() {});
     });
+
+    cargarCitas();
   }
 
   @override
@@ -62,7 +43,33 @@ class _CitasScreenState extends State<CitasScreen> {
     super.dispose();
   }
 
-  List<Map<String, dynamic>> get citasFiltradas {
+  Future<void> cargarCitas() async {
+    setState(() {
+      isLoading = true;
+      error = null;
+    });
+
+    try {
+      final resultado =
+          await _apiService.obtenerCitas();
+
+      if (!mounted) return;
+
+      setState(() {
+        citas = resultado;
+        isLoading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() {
+        error = e.toString();
+        isLoading = false;
+      });
+    }
+  }
+
+  List<Cita> get citasFiltradas {
     final texto =
         searchController.text.trim().toLowerCase();
 
@@ -71,23 +78,44 @@ class _CitasScreenState extends State<CitasScreen> {
     }
 
     return citas.where((cita) {
-      final paciente =
-          cita['paciente'].toString().toLowerCase();
-
-      final odontologo =
-          cita['odontologo'].toString().toLowerCase();
-
       final estado =
-          cita['estado'].toString().toLowerCase();
+          cita.estado.toLowerCase();
 
       final fecha =
-          cita['fecha'].toString().toLowerCase();
+          cita.fechaHora.toString().toLowerCase();
 
-      return paciente.contains(texto) ||
-          odontologo.contains(texto) ||
-          estado.contains(texto) ||
-          fecha.contains(texto);
+      final motivo =
+          cita.motivo.toLowerCase();
+
+      return estado.contains(texto) ||
+          fecha.contains(texto) ||
+          motivo.contains(texto) ||
+          cita.idPaciente
+              .toString()
+              .contains(texto) ||
+          cita.idOdontologo
+              .toString()
+              .contains(texto);
     }).toList();
+  }
+
+  String formatearFecha(DateTime fecha) {
+    final dia =
+        fecha.day.toString().padLeft(2, '0');
+
+    final mes =
+        fecha.month.toString().padLeft(2, '0');
+
+    final anio =
+        fecha.year.toString();
+
+    final hora =
+        fecha.hour.toString().padLeft(2, '0');
+
+    final minuto =
+        fecha.minute.toString().padLeft(2, '0');
+
+    return '$dia/$mes/$anio $hora:$minuto';
   }
 
   @override
@@ -103,17 +131,16 @@ class _CitasScreenState extends State<CitasScreen> {
         children: [
           CustomSearchBar(
             controller: searchController,
-            hint: 'Buscar cita por paciente u odontólogo...',
+            hint: 'Buscar cita...',
           ),
 
           Expanded(
             child: AsyncStateView(
-              isLoading: false,
-              error: null,
-              isEmpty: lista.isEmpty,
-              onRetry: () {
-                setState(() {});
-              },
+              isLoading: isLoading,
+              error: error,
+              isEmpty:
+                  !isLoading && lista.isEmpty,
+              onRetry: cargarCitas,
               child: ListView.builder(
                 padding: const EdgeInsets.only(
                   top: 8,
@@ -132,7 +159,7 @@ class _CitasScreenState extends State<CitasScreen> {
                       ),
 
                       title: Text(
-                        cita['paciente'].toString(),
+                        'Cita #${cita.idCita}',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -140,9 +167,16 @@ class _CitasScreenState extends State<CitasScreen> {
                       ),
 
                       subtitle: Text(
-                        'Fecha: ${cita['fecha']}\n'
-                        'Odontólogo: ${cita['odontologo']}\n'
-                        'Estado: ${cita['estado']}',
+                        'Fecha: '
+                        '${formatearFecha(cita.fechaHora)}\n'
+                        'Motivo: '
+                        '${cita.motivo}\n'
+                        'Paciente: '
+                        '${cita.idPaciente}\n'
+                        'Odontólogo: '
+                        '${cita.idOdontologo}\n'
+                        'Estado: '
+                        '${cita.estado}',
                       ),
 
                       isThreeLine: true,
@@ -155,13 +189,14 @@ class _CitasScreenState extends State<CitasScreen> {
                         await Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => EditarCitaScreen(
+                            builder: (_) =>
+                                EditarCitaScreen(
                               cita: cita,
                             ),
                           ),
                         );
 
-                        setState(() {});
+                        cargarCitas();
                       },
                     ),
                   );
@@ -172,16 +207,18 @@ class _CitasScreenState extends State<CitasScreen> {
         ],
       ),
 
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton:
+          FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => const NuevaCitaScreen(),
+              builder: (_) =>
+                  const NuevaCitaScreen(),
             ),
           );
 
-          setState(() {});
+          cargarCitas();
         },
         child: const Icon(Icons.add),
       ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../models/odontologo.dart';
+import '../../services/odontologo_api_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_textfield.dart';
 
@@ -13,21 +15,30 @@ class NuevoOdontologoScreen extends StatefulWidget {
 
 class _NuevoOdontologoScreenState
     extends State<NuevoOdontologoScreen> {
-  final TextEditingController nombreController =
+  final nombresController =
       TextEditingController();
 
-  final TextEditingController especialidadController =
+  final apellidosController =
       TextEditingController();
 
-  final TextEditingController telefonoController =
+  final especialidadController =
       TextEditingController();
 
-  final TextEditingController correoController =
+  final telefonoController =
       TextEditingController();
+
+  final correoController =
+      TextEditingController();
+
+  final OdontologoApiService apiService =
+      OdontologoApiService();
+
+  bool guardando = false;
 
   @override
   void dispose() {
-    nombreController.dispose();
+    nombresController.dispose();
+    apellidosController.dispose();
     especialidadController.dispose();
     telefonoController.dispose();
     correoController.dispose();
@@ -35,8 +46,70 @@ class _NuevoOdontologoScreenState
     super.dispose();
   }
 
-  void guardarOdontologo() {
-    Navigator.pop(context);
+  Future<void> guardarOdontologo() async {
+    if (nombresController.text.trim().isEmpty ||
+        apellidosController.text.trim().isEmpty ||
+        especialidadController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Completa los campos obligatorios.',
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      guardando = true;
+    });
+
+    final odontologo = Odontologo(
+      nombres: nombresController.text.trim(),
+      apellidos: apellidosController.text.trim(),
+      especialidad:
+          especialidadController.text.trim(),
+      telefono:
+          telefonoController.text.trim().isEmpty
+              ? null
+              : telefonoController.text.trim(),
+      correo:
+          correoController.text.trim().isEmpty
+              ? null
+              : correoController.text.trim(),
+      estado: 'Activo',
+    );
+
+    final resultado =
+        await apiService.crearOdontologo(
+      odontologo,
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      guardando = false;
+    });
+
+    if (resultado != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Odontólogo registrado correctamente.',
+          ),
+        ),
+      );
+
+      Navigator.pop(context, true);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No se pudo registrar el odontólogo.',
+          ),
+        ),
+      );
+    }
   }
 
   @override
@@ -52,8 +125,13 @@ class _NuevoOdontologoScreenState
         child: ListView(
           children: [
             CustomTextField(
-              controller: nombreController,
-              label: 'Nombre',
+              controller: nombresController,
+              label: 'Nombres',
+            ),
+
+            CustomTextField(
+              controller: apellidosController,
+              label: 'Apellidos',
             ),
 
             CustomTextField(
@@ -70,15 +148,21 @@ class _NuevoOdontologoScreenState
             CustomTextField(
               controller: correoController,
               label: 'Correo',
-              keyboardType: TextInputType.emailAddress,
+              keyboardType:
+                  TextInputType.emailAddress,
             ),
 
             const SizedBox(height: 20),
 
             CustomButton(
-              texto: 'Guardar Odontólogo',
+              texto: guardando
+                  ? 'Guardando...'
+                  : 'Guardar Odontólogo',
               icono: Icons.save,
-              onPressed: guardarOdontologo,
+              onPressed:
+                  guardando
+                      ? null
+                      : guardarOdontologo,
             ),
           ],
         ),

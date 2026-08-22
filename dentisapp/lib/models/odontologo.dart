@@ -1,23 +1,11 @@
 /// Modelo que representa a un odontólogo dentro del sistema.
 class Odontologo {
-  /// Identificador único del odontólogo.
   final int? idOdontologo;
-
-  /// Nombre completo del profesional.
   final String nombres;
-
   final String apellidos;
-
-  /// Especialidad del odontólogo.
   final String especialidad;
-
-  /// Teléfono de contacto.
   final String? telefono;
-
-  /// Correo electrónico.
   final String? correo;
-
-  /// Estado actual del profesional.
   final String estado;
 
   Odontologo({
@@ -30,12 +18,13 @@ class Odontologo {
     this.estado = 'Activo',
   });
 
-  /// Convierte el objeto a un mapa para su uso en almacenamiento o API.
-  Map<String, dynamic> toMap() {
+  /// Convierte el objeto a JSON para enviarlo a la API.
+  Map<String, dynamic> toJson() {
     return {
-      'id_odontologo': idOdontologo,
-      'nombre': nombres,
-      'apellido': apellidos,
+      if (idOdontologo != null)
+        'idOdontologo': idOdontologo,
+      'nombres': nombres,
+      'apellidos': apellidos,
       'especialidad': especialidad,
       'telefono': telefono,
       'correo': correo,
@@ -43,16 +32,18 @@ class Odontologo {
     };
   }
 
-  /// Crea una instancia del modelo desde un mapa de datos.
-  factory Odontologo.fromMap(Map<String, dynamic> map) {
+  /// Crea un odontólogo a partir de la respuesta de la API.
+  factory Odontologo.fromJson(
+    Map<String, dynamic> json,
+  ) {
     return Odontologo(
-      idOdontologo: map['id_odontologo'],
-      nombres: map['nombre'],
-      apellidos: map['apellido'],
-      especialidad: map['especialidad'],
-      telefono: map['telefono'],
-      correo: map['correo'],
-      estado: map['estado'] ?? 'Activo',
+      idOdontologo: json['idOdontologo'],
+      nombres: json['nombres'] ?? '',
+      apellidos: json['apellidos'] ?? '',
+      especialidad: json['especialidad'] ?? '',
+      telefono: json['telefono'],
+      correo: json['correo'],
+      estado: json['estado'] ?? 'Activo',
     );
   }
 }
