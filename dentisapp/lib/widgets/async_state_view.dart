@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../theme/app_spacing.dart';
+
 class AsyncStateView extends StatelessWidget {
   final bool isLoading;
   final String? error;
@@ -18,6 +20,8 @@ class AsyncStateView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(),
@@ -27,21 +31,32 @@ class AsyncStateView extends StatelessWidget {
     if (error != null) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.all(
+            AppSpacing.lg,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline,
-                size: 48,
-                color: Colors.redAccent,
+                size: AppSpacing.iconLg,
+                color: theme.colorScheme.error,
               ),
-              const SizedBox(height: 12),
+
+              const SizedBox(
+                height: AppSpacing.sm,
+              ),
+
               Text(
                 error!,
                 textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium,
               ),
-              const SizedBox(height: 16),
+
+              const SizedBox(
+                height: AppSpacing.md,
+              ),
+
               if (onRetry != null)
                 ElevatedButton.icon(
                   onPressed: onRetry,
@@ -55,10 +70,16 @@ class AsyncStateView extends StatelessWidget {
     }
 
     if (isEmpty) {
-      return const Center(
-        child: Text(
-          'No hay información disponible.',
-          textAlign: TextAlign.center,
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(
+            AppSpacing.lg,
+          ),
+          child: Text(
+            'No hay información disponible.',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
+          ),
         ),
       );
     }
