@@ -1,6 +1,7 @@
 using DentisAppAPI.Data;
 using DentisAppAPI.Helpers;
 using DentisAppAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -9,6 +10,7 @@ namespace DentisAppAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class PacientesController : ControllerBase
     {
         private readonly DentisAppContext _context;

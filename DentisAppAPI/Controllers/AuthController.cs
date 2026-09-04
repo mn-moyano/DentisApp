@@ -1,44 +1,82 @@
+using DentisAppAPI.DTOs.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-[ApiController]
-[Route("api/[controller]")]
-public class AuthController : ControllerBase
+namespace DentisAppAPI.Controllers
 {
-    private readonly IConfiguration _config;
-
-    public AuthController(IConfiguration config)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AuthController : ControllerBase
     {
-        _config = config;
-    }
+        private readonly IConfiguration _config;
 
-    [HttpPost("login")]
-    public IActionResult Login(string username, string password)
-    {
-        // Aquí deberías validar contra tu base de datos
-        if (username == "admin" && password == "1234")
+        public AuthController(IConfiguration config)
         {
+            _config = config;
+        }
+
+        [HttpPost("login")]
+        public IActionResult Login([FromBody] LoginRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Username) ||
+                string.IsNullOrWhiteSpace(request.Password))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "El usuario y la contraseña son obligatorios."
+                });
+            }
+
+            // Usuario de prueba para esta etapa del proyecto.
+            if (request.Username != "admin" ||
+                request.Password != "1234")
+            {
+                return Unauthorized(new
+                {
+                    success = false,
+                    message = "Usuario o contraseña incorrectos."
+                });
+            }
+
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, username)
+                new Claim(ClaimTypes.Name, request.Username),
+                new Claim(ClaimTypes.Role, "Administrador")
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(
+                    _config["Jwt:Key"]!
+                )
+            );
+
+            var credentials = new SigningCredentials(
+                key,
+                SecurityAlgorithms.HmacSha256
+            );
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
-                signingCredentials: creds);
+                expires: DateTime.UtcNow.AddHours(1),
+                signingCredentials: credentials
+            );
 
-            return Ok(new { token = new JwtSecurityTokenHandler().WriteToken(token) });
+            var tokenString =
+                new JwtSecurityTokenHandler()
+                    .WriteToken(token);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Inicio de sesión correcto.",
+                token = tokenString
+            });
         }
-
-        return Unauthorized();
     }
 }

@@ -10,11 +10,11 @@ void main() {
       expect(pacientes, isEmpty);
     });
 
-    test('debe devolver null al buscar un paciente inexistente', () async {
-      final service = PacienteApiService();
-      final paciente = await service.obtenerPacientePorId(999);
+   // test('debe devolver null al buscar un paciente inexistente', () async {
+     // final service = PacienteApiService();
+     // final paciente = await service.obtenerPacientePorId(999);
 
-      expect(paciente, isNull);
-    });
-  });
+     // expect(paciente, isNull);
+  //  });
+ });
 }
