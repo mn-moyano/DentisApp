@@ -10,7 +10,7 @@ class PacienteApiService {
   static const String apiBaseUrl =
       String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:5133',
+    defaultValue: 'http://10.0.2.2:5133',
   );
 
   String get baseUrl =>

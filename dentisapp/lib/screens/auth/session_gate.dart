@@ -14,7 +14,6 @@ class SessionGate extends StatefulWidget {
 
 class _SessionGateState
     extends State<SessionGate> {
-
   final AuthService _authService =
       AuthService();
 
@@ -31,13 +30,42 @@ class _SessionGateState
 
     if (!mounted) return;
 
+    if (!tieneSesion) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const LoginScreen(),
+        ),
+      );
+
+      return;
+    }
+
+    final rol = await _authService.obtenerRol();
+
+    if (!mounted) return;
+
+    if (rol == 'Administrador') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        ),
+      );
+
+      return;
+    }
+
+    // Si el token existe pero el rol no está
+    // autorizado, cerramos la sesión.
+    await _authService.cerrarSesion();
+
+    if (!mounted) return;
+
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) =>
-            tieneSesion
-                ? const HomeScreen()
-                : const LoginScreen(),
+        builder: (_) => const LoginScreen(),
       ),
     );
   }
@@ -46,8 +74,7 @@ class _SessionGateState
   Widget build(BuildContext context) {
     return const Scaffold(
       body: Center(
-        child:
-            CircularProgressIndicator(),
+        child: CircularProgressIndicator(),
       ),
     );
   }

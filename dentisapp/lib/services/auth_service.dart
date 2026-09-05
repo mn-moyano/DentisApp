@@ -3,17 +3,20 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../models/login_response.dart';
+import 'jwt_service.dart';
 import 'storage/secure_storage_service.dart';
 
 class AuthService {
   static const String apiBaseUrl =
       String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://localhost:5133',
+    defaultValue: 'http://10.0.2.2:5133',
   );
 
   final SecureStorageService _secureStorage =
       SecureStorageService();
+
+  final JwtService _jwtService = JwtService();
 
   Future<LoginResponse> login({
     required String username,
@@ -57,6 +60,26 @@ class AuthService {
 
   Future<String?> obtenerToken() async {
     return await _secureStorage.obtenerToken();
+  }
+
+  Future<String?> obtenerRol() async {
+    final token = await _secureStorage.obtenerToken();
+
+    if (token == null || token.isEmpty) {
+      return null;
+    }
+
+    return _jwtService.obtenerRol(token);
+  }
+
+  Future<String?> obtenerUsuario() async {
+    final token = await _secureStorage.obtenerToken();
+
+    if (token == null || token.isEmpty) {
+      return null;
+    }
+
+    return _jwtService.obtenerUsuario(token);
   }
 
   Future<void> cerrarSesion() async {

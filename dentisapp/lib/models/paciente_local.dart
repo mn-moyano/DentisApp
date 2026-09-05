@@ -1,7 +1,6 @@
 import 'paciente.dart';
 
 class PacienteLocal {
-
   final int? idLocal;
 
   final int? idPaciente;
@@ -14,9 +13,13 @@ class PacienteLocal {
 
   final String cedula;
 
+  final DateTime? fechaNacimiento;
+
   final String? telefono;
 
   final String? correo;
+
+  final String? direccion;
 
   final String syncStatus;
 
@@ -31,15 +34,16 @@ class PacienteLocal {
     required this.nombres,
     required this.apellidos,
     required this.cedula,
+    this.fechaNacimiento,
     this.telefono,
     this.correo,
+    this.direccion,
     required this.syncStatus,
     this.updatedAtServer,
     required this.cachedAt,
   });
 
   Map<String, dynamic> toMap() {
-
     return {
       'id_local': idLocal,
 
@@ -53,15 +57,19 @@ class PacienteLocal {
 
       'cedula': cedula,
 
+      'fecha_nacimiento':
+          fechaNacimiento?.toIso8601String(),
+
       'telefono': telefono,
 
       'correo': correo,
 
+      'direccion': direccion,
+
       'sync_status': syncStatus,
 
       'updated_at_server':
-          updatedAtServer
-              ?.toIso8601String(),
+          updatedAtServer?.toIso8601String(),
 
       'cached_at':
           cachedAt.toIso8601String(),
@@ -71,53 +79,49 @@ class PacienteLocal {
   factory PacienteLocal.fromMap(
     Map<String, dynamic> map,
   ) {
-
     return PacienteLocal(
-
       idLocal: map['id_local'],
 
-      idPaciente:
-          map['id_paciente'],
+      idPaciente: map['id_paciente'],
 
-      clientId:
-          map['client_id'],
+      clientId: map['client_id'],
 
-      nombres:
-          map['nombres'],
+      nombres: map['nombres'],
 
-      apellidos:
-          map['apellidos'],
+      apellidos: map['apellidos'],
 
-      cedula:
-          map['cedula'],
+      cedula: map['cedula'],
 
-      telefono:
-          map['telefono'],
+      fechaNacimiento:
+          map['fecha_nacimiento'] != null
+              ? DateTime.tryParse(
+                  map['fecha_nacimiento'].toString(),
+                )
+              : null,
 
-      correo:
-          map['correo'],
+      telefono: map['telefono'],
 
-      syncStatus:
-          map['sync_status'],
+      correo: map['correo'],
+
+      direccion: map['direccion'],
+
+      syncStatus: map['sync_status'],
 
       updatedAtServer:
           map['updated_at_server'] != null
-              ? DateTime.parse(
-                  map[
-                    'updated_at_server'
-                  ],
+              ? DateTime.tryParse(
+                  map['updated_at_server'].toString(),
                 )
               : null,
 
       cachedAt:
           DateTime.parse(
-            map['cached_at'],
+            map['cached_at'].toString(),
           ),
     );
   }
 
   Paciente toPaciente() {
-
     return Paciente(
       idPaciente: idPaciente,
 
@@ -127,9 +131,13 @@ class PacienteLocal {
 
       cedula: cedula,
 
+      fechaNacimiento: fechaNacimiento,
+
       telefono: telefono,
 
       correo: correo,
+
+      direccion: direccion,
     );
   }
 }
