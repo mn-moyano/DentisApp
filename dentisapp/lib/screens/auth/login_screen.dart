@@ -204,14 +204,6 @@ class _LoginScreenState
                     ),
                   ),
 
-                  const SizedBox(height: 20),
-
-                  const Text(
-                    'Usuario de prueba: admin\n'
-                    'Contraseña: 1234',
-                    textAlign:
-                        TextAlign.center,
-                  ),
                 ],
               ),
             ),

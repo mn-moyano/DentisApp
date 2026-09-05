@@ -15,12 +15,11 @@ class CustomDatePicker extends StatelessWidget {
   ) async {
     final DateTime ahora = DateTime.now();
 
-    final DateTime? fechaSeleccionada =
-        await showDatePicker(
+    final DateTime? fechaSeleccionada = await showDatePicker(
       context: context,
       initialDate: ahora,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
+      firstDate: DateTime(1900),
+      lastDate: ahora,
     );
 
     if (fechaSeleccionada == null) {
@@ -31,28 +30,13 @@ class CustomDatePicker extends StatelessWidget {
       return;
     }
 
-    final TimeOfDay? horaSeleccionada =
-        await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay(
-        hour: ahora.hour,
-        minute: ahora.minute,
-      ),
-    );
+    // Guardamos únicamente la fecha, sin hora.
+    final String fechaFormateada =
+        '${fechaSeleccionada.year.toString().padLeft(4, '0')}-'
+        '${fechaSeleccionada.month.toString().padLeft(2, '0')}-'
+        '${fechaSeleccionada.day.toString().padLeft(2, '0')}';
 
-    if (horaSeleccionada == null) {
-      return;
-    }
-
-    final DateTime fechaHora = DateTime(
-      fechaSeleccionada.year,
-      fechaSeleccionada.month,
-      fechaSeleccionada.day,
-      horaSeleccionada.hour,
-      horaSeleccionada.minute,
-    );
-
-    controller.text = fechaHora.toIso8601String();
+    controller.text = fechaFormateada;
   }
 
   @override

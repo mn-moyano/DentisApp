@@ -38,7 +38,8 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
     }
 
     return pacientes.where((paciente) {
-      final nombre = '${paciente.nombres} ${paciente.apellidos}'.toLowerCase();
+      final nombre =
+          '${paciente.nombres} ${paciente.apellidos}'.toLowerCase();
 
       final cedula = paciente.cedula.toLowerCase();
 
@@ -56,7 +57,6 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
   @override
   void dispose() {
     buscarController.dispose();
-
     super.dispose();
   }
 
@@ -66,7 +66,9 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
     final cacheTimestamp = ref.watch(pacientesCacheTimestampProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pacientes')),
+      appBar: AppBar(
+        title: const Text('Pacientes'),
+      ),
 
       body: Column(
         children: [
@@ -74,13 +76,48 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
             controller: buscarController,
             hint: 'Buscar paciente...',
           ),
+
+          // Indicador de antigüedad de los datos cuando se trabaja offline.
           if (cacheTimestamp != null)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(
-                'Sin conexión. Datos guardados hace '
-                '${_formatAge(cacheTimestamp)}.',
-                style: Theme.of(context).textTheme.bodySmall,
+            Container(
+              width: double.infinity,
+              margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 8,
+              ),
+              decoration: BoxDecoration(
+                color: Theme.of(context)
+                    .colorScheme
+                    .primaryContainer,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.cloud_off,
+                    size: 20,
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onPrimaryContainer,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Sin conexión · Datos guardados hace '
+                      '${_formatAge(cacheTimestamp)}.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onPrimaryContainer,
+                            fontWeight: FontWeight.w500,
+                          ),
+                    ),
+                  ),
+                ],
               ),
             ),
 
@@ -89,14 +126,19 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
               isLoading: pacientesState.isLoading,
               error: pacientesState.hasError
                   ? 'No se pudieron cargar los pacientes.\n\n'
-                        '${pacientesState.error}'
+                      '${pacientesState.error}'
                   : null,
               isEmpty:
                   !pacientesState.isLoading &&
                   !pacientesState.hasError &&
                   pacientesFiltrados.isEmpty,
-              onRetry: () => ref.read(pacientesProvider.notifier).recargar(),
-              child: construirLista(),
+              onRetry: () =>
+                  ref.read(pacientesProvider.notifier).recargar(),
+              child: RefreshIndicator(
+                onRefresh: () =>
+                    ref.read(pacientesProvider.notifier).recargar(),
+                child: construirLista(),
+              ),
             ),
           ),
         ],
@@ -106,7 +148,9 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => NuevoPacienteScreen()),
+            MaterialPageRoute(
+              builder: (_) => NuevoPacienteScreen(),
+            ),
           );
 
           ref.read(pacientesProvider.notifier).recargar();
@@ -118,9 +162,19 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
 
   String _formatAge(DateTime timestamp) {
     final age = DateTime.now().difference(timestamp);
-    if (age.inMinutes < 1) return 'menos de un minuto';
-    if (age.inHours < 1) return '${age.inMinutes} minutos';
-    if (age.inDays < 1) return '${age.inHours} horas';
+
+    if (age.inMinutes < 1) {
+      return 'menos de un minuto';
+    }
+
+    if (age.inHours < 1) {
+      return '${age.inMinutes} minutos';
+    }
+
+    if (age.inDays < 1) {
+      return '${age.inHours} horas';
+    }
+
     return '${age.inDays} días';
   }
 
@@ -137,7 +191,11 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 8, bottom: 80),
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(
+        top: 8,
+        bottom: 80,
+      ),
       itemCount: lista.length,
       itemBuilder: (context, index) {
         final paciente = lista[index];
@@ -145,6 +203,10 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
         return CustomCard(
           child: ListTile(
             leading: CircleAvatar(
+              backgroundColor:
+                  Theme.of(context).colorScheme.primaryContainer,
+              foregroundColor:
+                  Theme.of(context).colorScheme.onPrimaryContainer,
               child: Text(
                 paciente.nombres.isNotEmpty
                     ? paciente.nombres[0].toUpperCase()
@@ -154,7 +216,10 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
 
             title: Text(
               '${paciente.nombres} ${paciente.apellidos}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
             ),
 
             subtitle: Text(
@@ -164,13 +229,17 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
               'Dirección: ${paciente.direccion ?? ""}',
             ),
 
-            trailing: const Icon(Icons.arrow_forward_ios),
+            trailing: Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(context).colorScheme.primary,
+            ),
 
             onTap: () async {
               await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => EditarPacienteScreen(paciente: paciente),
+                  builder: (_) =>
+                      EditarPacienteScreen(paciente: paciente),
                 ),
               );
 

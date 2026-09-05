@@ -169,15 +169,18 @@ class SyncService {
 
       // Si alcanzó el máximo de reintentos o es un error
       // permanente, dejamos la operación en la cola.
-      if (siguienteIntento >= maxRetries ||
-          errorPermanente) {
+      if (errorPermanente) {
+        return;
+      }
+
+      if (siguienteIntento > maxRetries) {
         return;
       }
 
       await _pendingOperations.registrarReintento(
         operationId,
         siguienteIntento,
-      );
+      );  
     } on FormatException {
       // El payload almacenado no tiene un formato JSON válido.
       // No se reintenta automáticamente porque el problema
