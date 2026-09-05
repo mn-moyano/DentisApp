@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../models/paciente.dart';
+import '../../services/connectivity_service.dart';
 import '../../services/paciente_api_service.dart';
 import '../../services/api_client.dart';
 import '../../services/pending_operations_service.dart';
@@ -25,6 +26,8 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
   final TextEditingController telefonoController = TextEditingController();
   final TextEditingController correoController = TextEditingController();
   final TextEditingController direccionController = TextEditingController();
+
+  final ConnectivityService connectivityService = ConnectivityService();
 
   final PacienteApiService pacienteApiService = PacienteApiService();
   final PendingOperationsService pendingOperationsService =

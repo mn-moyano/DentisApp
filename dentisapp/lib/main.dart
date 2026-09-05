@@ -7,25 +7,35 @@ import 'theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  final syncService = SyncService()..iniciar();
 
-  runApp(ProviderScope(child: DentisApp(syncService: syncService)));
+  final syncService = SyncService();
+
+  runApp(
+    ProviderScope(
+      child: DentisApp(
+        syncService: syncService,
+      ),
+    ),
+  );
 }
 
 class DentisApp extends StatelessWidget {
-  const DentisApp({super.key, this.syncService});
+  const DentisApp({
+    super.key,
+    required this.syncService,
+  });
 
-  final SyncService? syncService;
+  final SyncService syncService;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'DentisApp',
       debugShowCheckedModeBanner: false,
-
       theme: AppTheme.light,
-
-      home: const SessionGate(),
+      home: SessionGate(
+        syncService: syncService,
+      ),
     );
   }
 }

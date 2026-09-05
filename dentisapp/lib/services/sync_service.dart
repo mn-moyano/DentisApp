@@ -5,62 +5,132 @@ import '../models/paciente.dart';
 import 'api_client.dart';
 import 'connectivity_service.dart';
 import 'paciente_api_service.dart';
+import 'paciente_local_service.dart';
 import 'pending_operations_service.dart';
 
 class SyncService {
   SyncService({
     PendingOperationsService? pendingOperations,
     PacienteApiService? pacientes,
+    PacienteLocalService? pacientesLocal,
     ConnectivityService? connectivity,
-  }) : _pendingOperations = pendingOperations ?? PendingOperationsService(),
-       _pacientes = pacientes ?? PacienteApiService(),
-       _connectivity = connectivity ?? ConnectivityService();
+  })  : _pendingOperations =
+            pendingOperations ?? PendingOperationsService(),
+        _pacientes = pacientes ?? PacienteApiService(),
+        _pacientesLocal =
+            pacientesLocal ?? PacienteLocalService(),
+        _connectivity =
+            connectivity ?? ConnectivityService();
 
   final PendingOperationsService _pendingOperations;
   final PacienteApiService _pacientes;
+  final PacienteLocalService _pacientesLocal;
   final ConnectivityService _connectivity;
+
   StreamSubscription<bool>? _connectivitySubscription;
+
   bool _syncing = false;
 
+  /// Inicia la escucha de cambios en la conexión.
+  ///
+  /// Cuando vuelve la conexión, se intenta sincronizar
+  /// automáticamente la información pendiente y actualizar
+  /// la caché local.
   void iniciar() {
-    _connectivitySubscription ??= _connectivity.estadoConexion.listen((
-      connected,
-    ) {
+    _connectivitySubscription ??=
+        _connectivity.estadoConexion.listen((connected) {
       if (connected) {
         sincronizar();
       }
     });
+
+    // Intentar una sincronización inicial inmediatamente.
+    sincronizar();
   }
 
+  /// Procesa la sincronización completa.
+  ///
+  /// Primero procesa las operaciones pendientes realizadas
+  /// sin conexión y posteriormente actualiza la caché local
+  /// con los datos disponibles en el servidor.
   Future<void> sincronizar() async {
-    if (_syncing || !await _connectivity.tieneConexion()) return;
+    if (_syncing || !await _connectivity.tieneConexion()) {
+      return;
+    }
+
     _syncing = true;
 
     try {
-      final operations = await _pendingOperations.obtenerPendientes();
+      // 1. Procesar operaciones pendientes.
+      final operations =
+          await _pendingOperations.obtenerPendientes();
+
       for (final operation in operations) {
         await _procesar(operation);
       }
+
+      // 2. Actualizar la caché local desde el servidor.
+      await _actualizarCachePacientes();
     } finally {
       _syncing = false;
     }
   }
 
-  Future<void> _procesar(Map<String, dynamic> operation) async {
-    final operationId = operation['operation_id'] as String;
-    final retryCount = (operation['retry_count'] as int?) ?? 0;
-    final maxRetries = (operation['max_retries'] as int?) ?? 5;
+  /// Descarga los pacientes del servidor y actualiza
+  /// la información almacenada localmente.
+  Future<void> _actualizarCachePacientes() async {
+    try {
+      final pacientes =
+          await _pacientes.obtenerPacientes();
+
+      await _pacientesLocal.guardarDesdeServidor(
+        pacientes,
+      );
+    } on ApiException {
+      // Si falla la actualización de la caché, se conserva
+      // la información local existente.
+      return;
+    }
+  }
+
+  /// Procesa una operación individual.
+  ///
+  /// En esta primera versión solamente se procesa
+  /// la creación offline de pacientes.
+  Future<void> _procesar(
+    Map<String, dynamic> operation,
+  ) async {
+    final operationId =
+        operation['operation_id'] as String;
+
+    final retryCount =
+        (operation['retry_count'] as int?) ?? 0;
+
+    final maxRetries =
+        (operation['max_retries'] as int?) ?? 5;
 
     try {
+      // Por ahora solamente manejamos:
+      // entidad = paciente
+      // operación = create
       if (operation['entity_type'] != 'paciente' ||
           operation['operation_type'] != 'create') {
-        await _pendingOperations.eliminar(operationId);
+        await _pendingOperations.eliminar(
+          operationId,
+        );
         return;
       }
 
-      final payload = jsonDecode(operation['payload']) as Map<String, dynamic>;
-      final created = await _pacientes.crearPaciente(
-        Paciente.fromJson(payload),
+      final payload =
+          jsonDecode(operation['payload'])
+              as Map<String, dynamic>;
+
+      final paciente =
+          Paciente.fromJson(payload);
+
+      final created =
+          await _pacientes.crearPaciente(
+        paciente,
       );
 
       if (created?.idPaciente == null) {
@@ -70,22 +140,56 @@ class SyncService {
         );
       }
 
-      await _pendingOperations.marcarPacienteSincronizado(
-        clientId: operation['entity_client_id'] as String,
+      final clientId =
+          operation['entity_client_id'] as String;
+
+      // Actualizamos el registro local con el ID
+      // generado por el servidor.
+      await _pendingOperations
+          .marcarPacienteSincronizado(
+        clientId: clientId,
         idPaciente: created!.idPaciente!,
       );
-      await _pendingOperations.eliminar(operationId);
+
+      // La operación ya fue procesada correctamente,
+      // por lo que se elimina de la cola.
+      await _pendingOperations.eliminar(
+        operationId,
+      );
     } on ApiException catch (error) {
-      if (retryCount + 1 >= maxRetries ||
-          (error.statusCode >= 400 && error.statusCode != 408)) {
+      final siguienteIntento =
+          retryCount + 1;
+
+      // Errores 4xx, excepto 408, normalmente representan
+      // problemas que no se solucionan simplemente reintentando.
+      final errorPermanente =
+          error.statusCode >= 400 &&
+          error.statusCode < 500 &&
+          error.statusCode != 408;
+
+      // Si alcanzó el máximo de reintentos o es un error
+      // permanente, dejamos la operación en la cola.
+      if (siguienteIntento >= maxRetries ||
+          errorPermanente) {
         return;
       }
-      await _pendingOperations.registrarReintento(operationId, retryCount + 1);
+
+      await _pendingOperations.registrarReintento(
+        operationId,
+        siguienteIntento,
+      );
+    } on FormatException {
+      // El payload almacenado no tiene un formato JSON válido.
+      // No se reintenta automáticamente porque el problema
+      // está en los datos almacenados.
+      return;
     }
   }
 
+  /// Detiene la escucha de cambios de conectividad.
   Future<void> cerrar() async {
     await _connectivitySubscription?.cancel();
+
     _connectivitySubscription = null;
   }
 }

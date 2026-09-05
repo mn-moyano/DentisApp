@@ -25,13 +25,16 @@ class LocalDatabase {
 
     return await openDatabase(
       path,
-      version: 2,
+      version: 3,
       onCreate: _createDatabase,
       onUpgrade: _upgradeDatabase,
     );
   }
 
-  Future<void> _createDatabase(Database db, int version) async {
+  Future<void> _createDatabase(
+    Database db,
+    int version,
+  ) async {
     await db.execute('''
       CREATE TABLE pacientes_local (
         id_local INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -45,6 +48,8 @@ class LocalDatabase {
         apellidos TEXT NOT NULL,
 
         cedula TEXT NOT NULL,
+
+        fecha_nacimiento TEXT,
 
         telefono TEXT,
 
@@ -90,8 +95,18 @@ class LocalDatabase {
     int oldVersion,
     int newVersion,
   ) async {
+    // Migración de versión 1 a 2.
     if (oldVersion < 2) {
-      await db.execute('ALTER TABLE pacientes_local ADD COLUMN direccion TEXT');
+      await db.execute(
+        'ALTER TABLE pacientes_local ADD COLUMN direccion TEXT',
+      );
+    }
+
+    // Migración de versión 2 a 3.
+    if (oldVersion < 3) {
+      await db.execute(
+        'ALTER TABLE pacientes_local ADD COLUMN fecha_nacimiento TEXT',
+      );
     }
   }
 

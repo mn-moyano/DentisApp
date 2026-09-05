@@ -1,21 +1,24 @@
 import 'package:flutter/material.dart';
 
 import '../../services/auth_service.dart';
+import '../../services/sync_service.dart';
 import '../home_screen.dart';
 import 'login_screen.dart';
 
 class SessionGate extends StatefulWidget {
-  const SessionGate({super.key});
+  const SessionGate({
+    super.key,
+    required this.syncService,
+  });
+
+  final SyncService syncService;
 
   @override
-  State<SessionGate> createState() =>
-      _SessionGateState();
+  State<SessionGate> createState() => _SessionGateState();
 }
 
-class _SessionGateState
-    extends State<SessionGate> {
-  final AuthService _authService =
-      AuthService();
+class _SessionGateState extends State<SessionGate> {
+  final AuthService _authService = AuthService();
 
   @override
   void initState() {
@@ -46,6 +49,10 @@ class _SessionGateState
     if (!mounted) return;
 
     if (rol == 'Administrador') {
+      // Iniciamos la sincronización solamente
+      // cuando existe una sesión válida.
+      widget.syncService.iniciar();
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

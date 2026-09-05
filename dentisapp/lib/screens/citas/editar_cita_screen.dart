@@ -210,7 +210,7 @@ class _EditarCitaScreenState extends State<EditarCitaScreen> {
             const SizedBox(height: 5),
 
             DropdownButtonFormField<String>(
-              value: estadoSeleccionado,
+              initialValue: estadoSeleccionado,
               decoration: const InputDecoration(
                 labelText: 'Estado',
                 border: OutlineInputBorder(),
