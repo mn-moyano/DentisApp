@@ -12,10 +12,14 @@ namespace DentisAppAPI.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _config;
+        private readonly IWebHostEnvironment _environment;
 
-        public AuthController(IConfiguration config)
+        public AuthController(
+            IConfiguration config,
+            IWebHostEnvironment environment)
         {
             _config = config;
+            _environment = environment;
         }
 
         [HttpPost("login")]
@@ -31,8 +35,9 @@ namespace DentisAppAPI.Controllers
                 });
             }
 
-            // Usuario de prueba para esta etapa del proyecto.
-            if (request.Username != "admin" ||
+            // El usuario demo solo existe durante el desarrollo local.
+            if (!_environment.IsDevelopment() ||
+                request.Username != "admin" ||
                 request.Password != "1234")
             {
                 return Unauthorized(new

@@ -20,7 +20,17 @@ builder.Services.AddMemoryCache(); // Agrega soporte para caché en memoria
 
 // --- 2. CONFIGURACIÓN JWT ---
 var jwtSettings = builder.Configuration.GetSection("Jwt");
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"] ?? throw new InvalidOperationException("Jwt:Key no configurado"));
+var jwtKey = jwtSettings["Key"];
+var jwtIssuer = jwtSettings["Issuer"];
+var jwtAudience = jwtSettings["Audience"];
+
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
+    throw new InvalidOperationException("Jwt:Key debe estar configurada y tener al menos 32 caracteres.");
+
+if (string.IsNullOrWhiteSpace(jwtIssuer) || string.IsNullOrWhiteSpace(jwtAudience))
+    throw new InvalidOperationException("Jwt:Issuer y Jwt:Audience deben estar configurados.");
+
+var key = Encoding.UTF8.GetBytes(jwtKey);
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -31,8 +41,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtSettings["Issuer"],
-            ValidAudience = jwtSettings["Audience"],
+            ValidIssuer = jwtIssuer,
+            ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(key)
         };
     });
@@ -48,10 +58,20 @@ builder.Services.AddScoped<PacienteService>();
 // --- 4. CONFIGURACIÓN CORS Y SWAGGER ---
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
+    var allowedOrigins = builder.Configuration
+        .GetSection("Cors:AllowedOrigins")
+        .Get<string[]>() ?? Array.Empty<string>();
+
+    options.AddPolicy("AppClients", policy =>
+    {
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins);
+        }
+
+        policy.AllowAnyMethod()
+              .AllowAnyHeader();
+    });
 });
 
 builder.Services.AddEndpointsApiExplorer();
@@ -107,7 +127,7 @@ if (app.Environment.IsDevelopment())
 //app.UseHttpsRedirection();
 
 // El orden aquí es crítico para la seguridad y peticiones móviles
-app.UseCors("AllowAll");
+app.UseCors("AppClients");
 
 app.UseAuthentication();
 app.UseAuthorization();

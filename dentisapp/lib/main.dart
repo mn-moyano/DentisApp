@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'screens/auth/session_gate.dart';
+import 'services/sync_service.dart';
+import 'theme/app_theme.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  final syncService = SyncService()..iniciar();
 
-  runApp(const DentisApp());
+  runApp(ProviderScope(child: DentisApp(syncService: syncService)));
 }
 
 class DentisApp extends StatelessWidget {
-  const DentisApp({super.key});
+  const DentisApp({super.key, this.syncService});
+
+  final SyncService? syncService;
 
   @override
   Widget build(BuildContext context) {
@@ -17,12 +23,7 @@ class DentisApp extends StatelessWidget {
       title: 'DentisApp',
       debugShowCheckedModeBanner: false,
 
-      theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(
-          seedColor: Colors.deepPurple,
-        ),
-      ),
+      theme: AppTheme.light,
 
       home: const SessionGate(),
     );

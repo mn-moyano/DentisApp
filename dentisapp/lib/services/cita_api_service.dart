@@ -1,158 +1,48 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
 import '../models/cita.dart';
+import 'api_client.dart';
 
 class CitaApiService {
-  static const String apiBaseUrl =
-      String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://localhost:5133',
-  );
+  final ApiClient _apiClient = ApiClient();
+  String get baseUrl => '/api/citas';
 
-  String get baseUrl => '$apiBaseUrl/api/citas';
-
-  /// Obtener todas las citas.
   Future<List<Cita>> obtenerCitas() async {
-    final response = await http.get(
-      Uri.parse(baseUrl),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> respuesta =
-          jsonDecode(response.body);
-
-      final List<dynamic> data =
-          respuesta['data'];
-
-      return data
-          .map(
-            (json) => Cita.fromMap(json),
-          )
-          .toList();
-    }
-
-    throw Exception(
-      'Error al obtener citas: '
-      '${response.statusCode} - '
-      '${response.body}',
-    );
+    final response = await _apiClient.get(baseUrl);
+    final data =
+        (jsonDecode(response.body) as Map<String, dynamic>)['data']
+            as List<dynamic>;
+    return data.map((json) => Cita.fromMap(json)).toList();
   }
 
-  /// Obtener una cita por ID.
   Future<Cita?> obtenerCitaPorId(int id) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$id'),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> respuesta =
-          jsonDecode(response.body);
-
-      return Cita.fromMap(
-        respuesta['data'],
-      );
+    try {
+      final response = await _apiClient.get('$baseUrl/$id');
+      final data = (jsonDecode(response.body) as Map<String, dynamic>)['data'];
+      return Cita.fromMap(data);
+    } on ApiException catch (error) {
+      if (error.statusCode == 404) return null;
+      rethrow;
     }
-
-    if (response.statusCode == 404) {
-      return null;
-    }
-
-    throw Exception(
-      'Error al obtener cita: '
-      '${response.statusCode}',
-    );
   }
 
-  /// Crear una nueva cita.
   Future<Cita?> crearCita(Cita cita) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(
-        cita.toMap(),
-      ),
-    );
-
-    print(
-      'STATUS CREAR CITA: '
-      '${response.statusCode}',
-    );
-
-    print(
-      'RESPUESTA CREAR CITA: '
-      '${response.body}',
-    );
-
-    if (response.statusCode == 200 ||
-        response.statusCode == 201) {
-      final Map<String, dynamic> respuesta =
-          jsonDecode(response.body);
-
-      return Cita.fromMap(
-        respuesta['data'],
-      );
-    }
-
-    return null;
+    final response = await _apiClient.post(baseUrl, body: cita.toMap());
+    final data = (jsonDecode(response.body) as Map<String, dynamic>)['data'];
+    return Cita.fromMap(data);
   }
 
-  /// Actualizar una cita existente.
   Future<Cita?> actualizarCita(Cita cita) async {
-    final url = '$baseUrl/${cita.idCita}';
-
-    print(
-      '========== ACTUALIZAR CITA ==========',
+    final response = await _apiClient.put(
+      '$baseUrl/${cita.idCita}',
+      body: cita.toMap(),
     );
-
-    print('URL: $url');
-
-    print(
-      'JSON ENVIADO: '
-      '${cita.toMap()}',
-    );
-
-    final response = await http.put(
-      Uri.parse(url),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(
-        cita.toMap(),
-      ),
-    );
-
-    print(
-      'STATUS ACTUALIZAR CITA: '
-      '${response.statusCode}',
-    );
-
-    print(
-      'RESPUESTA ACTUALIZAR CITA: '
-      '${response.body}',
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> respuesta =
-          jsonDecode(response.body);
-
-      return Cita.fromMap(
-        respuesta['data'],
-      );
-    }
-
-    return null;
+    final data = (jsonDecode(response.body) as Map<String, dynamic>)['data'];
+    return Cita.fromMap(data);
   }
 
-  /// Eliminar una cita.
   Future<bool> eliminarCita(int id) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/$id'),
-    );
-
-    return response.statusCode == 200;
+    await _apiClient.delete('$baseUrl/$id');
+    return true;
   }
 }

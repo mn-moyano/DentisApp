@@ -1,148 +1,38 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
 import '../models/paciente.dart';
-import 'auth_service.dart';
+import 'api_client.dart';
 
 class PacienteApiService {
+  String get baseUrl => '/api/pacientes';
 
-  static const String apiBaseUrl =
-      String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://localhost:5133',
-  );
+  final ApiClient _apiClient = ApiClient();
 
-  String get baseUrl =>
-      '$apiBaseUrl/api/pacientes';
+  Future<List<Paciente>> obtenerPacientes() async {
+    final response = await _apiClient.get(baseUrl);
+    final respuesta = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = respuesta['data'] as List<dynamic>;
 
-  final AuthService _authService =
-      AuthService();
-
-  Future<Map<String, String>>
-      _headers() async {
-
-    final token =
-        await _authService.obtenerToken();
-
-    return {
-      'Content-Type':
-          'application/json',
-
-      if (token != null)
-        'Authorization':
-            'Bearer $token',
-    };
+    return data.map((json) => Paciente.fromJson(json)).toList();
   }
 
-  Future<List<Paciente>>
-      obtenerPacientes() async {
-
-    final response = await http.get(
-      Uri.parse(baseUrl),
-      headers: await _headers(),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic>
-          respuesta =
-          jsonDecode(response.body);
-
-      final List<dynamic> data =
-          respuesta['data'];
-
-      return data
-          .map(
-            (json) =>
-                Paciente.fromJson(json),
-          )
-          .toList();
-    }
-
-    if (response.statusCode == 401) {
-      throw Exception(
-        'Sesión no autorizada.',
-      );
-    }
-
-    throw Exception(
-      'Error al obtener pacientes: '
-      '${response.statusCode}',
-    );
+  Future<Paciente?> crearPaciente(Paciente paciente) async {
+    final response = await _apiClient.post(baseUrl, body: paciente.toJson());
+    final respuesta = jsonDecode(response.body) as Map<String, dynamic>;
+    return Paciente.fromJson(respuesta['data']);
   }
 
-  Future<Paciente?>
-      crearPaciente(
-    Paciente paciente,
-  ) async {
-
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: await _headers(),
-      body: jsonEncode(
-        paciente.toJson(),
-      ),
+  Future<Paciente?> actualizarPaciente(Paciente paciente) async {
+    final response = await _apiClient.put(
+      '$baseUrl/${paciente.idPaciente}',
+      body: paciente.toJson(),
     );
-
-    if (response.statusCode == 201) {
-
-      final Map<String, dynamic>
-          respuesta =
-          jsonDecode(response.body);
-
-      return Paciente.fromJson(
-        respuesta['data'],
-      );
-    }
-
-    throw Exception(
-      'No se pudo registrar '
-      'el paciente.',
-    );
+    final respuesta = jsonDecode(response.body) as Map<String, dynamic>;
+    return Paciente.fromJson(respuesta['data']);
   }
 
-  Future<Paciente?>
-      actualizarPaciente(
-    Paciente paciente,
-  ) async {
-
-    final response = await http.put(
-      Uri.parse(
-        '$baseUrl/${paciente.idPaciente}',
-      ),
-      headers: await _headers(),
-      body: jsonEncode(
-        paciente.toJson(),
-      ),
-    );
-
-    if (response.statusCode == 200) {
-
-      final Map<String, dynamic>
-          respuesta =
-          jsonDecode(response.body);
-
-      return Paciente.fromJson(
-        respuesta['data'],
-      );
-    }
-
-    throw Exception(
-      'No se pudo actualizar '
-      'el paciente.',
-    );
-  }
-
-  Future<bool> eliminarPaciente(
-    int id,
-  ) async {
-
-    final response =
-        await http.delete(
-      Uri.parse('$baseUrl/$id'),
-      headers: await _headers(),
-    );
-
-    return response.statusCode == 200;
+  Future<bool> eliminarPaciente(int id) async {
+    await _apiClient.delete('$baseUrl/$id');
+    return true;
   }
 }
