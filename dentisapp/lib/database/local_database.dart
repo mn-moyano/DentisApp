@@ -2,51 +2,36 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
 class LocalDatabase {
-
-  static final LocalDatabase instance =
-      LocalDatabase._init();
+  static final LocalDatabase instance = LocalDatabase._init();
 
   LocalDatabase._init();
 
   static Database? _database;
 
   Future<Database> get database async {
-
     if (_database != null) {
       return _database!;
     }
 
-    _database =
-        await _initDatabase(
-      'dentisapp.db',
-    );
+    _database = await _initDatabase('dentisapp.db');
 
     return _database!;
   }
 
-  Future<Database>
-      _initDatabase(
-    String filePath,
-  ) async {
+  Future<Database> _initDatabase(String filePath) async {
+    final dbPath = await getDatabasesPath();
 
-    final dbPath =
-        await getDatabasesPath();
-
-    final path =
-        join(dbPath, filePath);
+    final path = join(dbPath, filePath);
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _createDatabase,
+      onUpgrade: _upgradeDatabase,
     );
   }
 
-  Future<void> _createDatabase(
-    Database db,
-    int version,
-  ) async {
-
+  Future<void> _createDatabase(Database db, int version) async {
     await db.execute('''
       CREATE TABLE pacientes_local (
         id_local INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,6 +49,8 @@ class LocalDatabase {
         telefono TEXT,
 
         correo TEXT,
+
+        direccion TEXT,
 
         sync_status TEXT NOT NULL,
 
@@ -98,10 +85,18 @@ class LocalDatabase {
     ''');
   }
 
-  Future<void> cerrar() async {
+  Future<void> _upgradeDatabase(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE pacientes_local ADD COLUMN direccion TEXT');
+    }
+  }
 
-    final db =
-        await instance.database;
+  Future<void> cerrar() async {
+    final db = await instance.database;
 
     await db.close();
 
@@ -109,14 +104,11 @@ class LocalDatabase {
   }
 
   Future<void> eliminarBaseDatos() async {
-
     await cerrar();
 
-    final dbPath =
-        await getDatabasesPath();
+    final dbPath = await getDatabasesPath();
 
-    final path =
-        join(dbPath, 'dentisapp.db');
+    final path = join(dbPath, 'dentisapp.db');
 
     await deleteDatabase(path);
   }

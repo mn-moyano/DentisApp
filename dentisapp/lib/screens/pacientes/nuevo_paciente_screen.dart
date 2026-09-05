@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../models/paciente.dart';
 import '../../services/paciente_api_service.dart';
+import '../../services/api_client.dart';
+import '../../services/pending_operations_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_date_picker.dart';
 import '../../widgets/custom_textfield.dart';
@@ -25,6 +27,8 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
   final TextEditingController direccionController = TextEditingController();
 
   final PacienteApiService pacienteApiService = PacienteApiService();
+  final PendingOperationsService pendingOperationsService =
+      PendingOperationsService();
 
   bool guardando = false;
 
@@ -35,9 +39,7 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
         cedulaController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Nombres, apellidos y cédula son obligatorios.',
-          ),
+          content: Text('Nombres, apellidos y cédula son obligatorios.'),
         ),
       );
       return;
@@ -46,6 +48,8 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
     setState(() {
       guardando = true;
     });
+
+    Paciente? pacientePendiente;
 
     try {
       DateTime? fechaNacimiento;
@@ -71,40 +75,43 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
             ? null
             : direccionController.text.trim(),
       );
+      pacientePendiente = paciente;
 
-      final pacienteCreado =
-          await pacienteApiService.crearPaciente(paciente);
+      final pacienteCreado = await pacienteApiService.crearPaciente(paciente);
 
       if (!mounted) return;
 
       if (pacienteCreado != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Paciente registrado correctamente.',
-            ),
-          ),
+          const SnackBar(content: Text('Paciente registrado correctamente.')),
         );
 
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No se pudo registrar el paciente.')),
+        );
+      }
+    } on ApiException catch (error) {
+      if (!mounted) return;
+
+      if ((error.statusCode == 0 || error.statusCode == 408) &&
+          pacientePendiente != null) {
+        await pendingOperationsService.enqueueCreatePaciente(pacientePendiente);
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'No se pudo registrar el paciente.',
+              'Sin conexión. El paciente se guardó y se sincronizará después.',
             ),
           ),
         );
+        Navigator.pop(context, true);
+        return;
       }
-    } catch (e) {
-      if (!mounted) return;
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error al guardar paciente: $e',
-          ),
-        ),
+        SnackBar(content: Text('Error al guardar paciente: $error')),
       );
     } finally {
       if (mounted) {
@@ -131,24 +138,16 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nuevo Paciente'),
-      ),
+      appBar: AppBar(title: const Text('Nuevo Paciente')),
 
       body: Padding(
         padding: const EdgeInsets.all(16),
 
         child: ListView(
           children: [
-            CustomTextField(
-              controller: nombreController,
-              label: 'Nombres',
-            ),
+            CustomTextField(controller: nombreController, label: 'Nombres'),
 
-            CustomTextField(
-              controller: apellidoController,
-              label: 'Apellidos',
-            ),
+            CustomTextField(controller: apellidoController, label: 'Apellidos'),
 
             CustomTextField(
               controller: cedulaController,
@@ -181,13 +180,9 @@ class _NuevoPacienteScreenState extends State<NuevoPacienteScreen> {
             const SizedBox(height: 20),
 
             CustomButton(
-              texto: guardando
-                  ? 'Guardando...'
-                  : 'Guardar Paciente',
+              texto: guardando ? 'Guardando...' : 'Guardar Paciente',
               icono: Icons.save,
-              onPressed: guardando
-                  ? null
-                  : guardarPaciente,
+              onPressed: guardando ? null : guardarPaciente,
             ),
           ],
         ),

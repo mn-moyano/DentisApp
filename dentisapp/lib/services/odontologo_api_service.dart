@@ -1,155 +1,48 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-
 import '../models/odontologo.dart';
+import 'api_client.dart';
 
 class OdontologoApiService {
-  static const String apiBaseUrl =
-      String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'http://localhost:5133',
-  );
+  final ApiClient _apiClient = ApiClient();
+  String get baseUrl => '/api/odontologos';
 
-  String get baseUrl =>
-      '$apiBaseUrl/api/odontologos';
-
-  /// Obtener todos los odontólogos.
   Future<List<Odontologo>> obtenerOdontologos() async {
-    final response = await http.get(
-      Uri.parse(baseUrl),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> respuesta =
-          jsonDecode(response.body);
-
-      final List<dynamic> data =
-          respuesta['data'];
-
-      return data
-          .map(
-            (json) => Odontologo.fromJson(json),
-          )
-          .toList();
-    }
-
-    throw Exception(
-      'Error al obtener odontólogos: '
-      '${response.statusCode} - '
-      '${response.body}',
-    );
+    final response = await _apiClient.get(baseUrl);
+    final data =
+        (jsonDecode(response.body) as Map<String, dynamic>)['data']
+            as List<dynamic>;
+    return data.map((json) => Odontologo.fromJson(json)).toList();
   }
 
-  /// Obtener odontólogo por ID.
-  Future<Odontologo?> obtenerOdontologoPorId(
-    int id,
-  ) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$id'),
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> respuesta =
-          jsonDecode(response.body);
-
-      return Odontologo.fromJson(
-        respuesta['data'],
-      );
+  Future<Odontologo?> obtenerOdontologoPorId(int id) async {
+    try {
+      final response = await _apiClient.get('$baseUrl/$id');
+      final data = (jsonDecode(response.body) as Map<String, dynamic>)['data'];
+      return Odontologo.fromJson(data);
+    } on ApiException catch (error) {
+      if (error.statusCode == 404) return null;
+      rethrow;
     }
-
-    if (response.statusCode == 404) {
-      return null;
-    }
-
-    throw Exception(
-      'Error al obtener odontólogo: '
-      '${response.statusCode}',
-    );
   }
 
-  /// Crear odontólogo.
-  Future<Odontologo?> crearOdontologo(
-    Odontologo odontologo,
-  ) async {
-    final response = await http.post(
-      Uri.parse(baseUrl),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(
-        odontologo.toJson(),
-      ),
-    );
-
-    print(
-      'STATUS CREAR ODONTÓLOGO: '
-      '${response.statusCode}',
-    );
-
-    print(
-      'RESPUESTA CREAR ODONTÓLOGO: '
-      '${response.body}',
-    );
-
-    if (response.statusCode == 201) {
-      final Map<String, dynamic> respuesta =
-          jsonDecode(response.body);
-
-      return Odontologo.fromJson(
-        respuesta['data'],
-      );
-    }
-
-    return null;
+  Future<Odontologo?> crearOdontologo(Odontologo odontologo) async {
+    final response = await _apiClient.post(baseUrl, body: odontologo.toJson());
+    final data = (jsonDecode(response.body) as Map<String, dynamic>)['data'];
+    return Odontologo.fromJson(data);
   }
 
-  /// Actualizar odontólogo.
-  Future<Odontologo?> actualizarOdontologo(
-    Odontologo odontologo,
-  ) async {
-    final response = await http.put(
-      Uri.parse(
-        '$baseUrl/${odontologo.idOdontologo}',
-      ),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(
-        odontologo.toJson(),
-      ),
+  Future<Odontologo?> actualizarOdontologo(Odontologo odontologo) async {
+    final response = await _apiClient.put(
+      '$baseUrl/${odontologo.idOdontologo}',
+      body: odontologo.toJson(),
     );
-
-    print(
-      'STATUS ACTUALIZAR ODONTÓLOGO: '
-      '${response.statusCode}',
-    );
-
-    print(
-      'RESPUESTA ACTUALIZAR ODONTÓLOGO: '
-      '${response.body}',
-    );
-
-    if (response.statusCode == 200) {
-      final Map<String, dynamic> respuesta =
-          jsonDecode(response.body);
-
-      return Odontologo.fromJson(
-        respuesta['data'],
-      );
-    }
-
-    return null;
+    final data = (jsonDecode(response.body) as Map<String, dynamic>)['data'];
+    return Odontologo.fromJson(data);
   }
 
-  /// Eliminar odontólogo.
-  Future<bool> eliminarOdontologo(
-    int id,
-  ) async {
-    final response = await http.delete(
-      Uri.parse('$baseUrl/$id'),
-    );
-
-    return response.statusCode == 200;
+  Future<bool> eliminarOdontologo(int id) async {
+    await _apiClient.delete('$baseUrl/$id');
+    return true;
   }
 }

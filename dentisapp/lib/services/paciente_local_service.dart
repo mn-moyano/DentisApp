@@ -5,157 +5,98 @@ import '../models/paciente.dart';
 import '../models/paciente_local.dart';
 
 class PacienteLocalService {
-
-  final LocalDatabase _localDatabase =
-      LocalDatabase.instance;
+  final LocalDatabase _localDatabase = LocalDatabase.instance;
 
   final Uuid _uuid = const Uuid();
 
-  Future<void>
-      guardarDesdeServidor(
-    List<Paciente> pacientes,
-  ) async {
-
-    final db =
-        await _localDatabase.database;
+  Future<void> guardarDesdeServidor(List<Paciente> pacientes) async {
+    final db = await _localDatabase.database;
 
     final batch = db.batch();
 
-    await db.delete(
-      'pacientes_local',
-    );
+    await db.delete('pacientes_local');
 
-    final ahora =
-        DateTime.now().toIso8601String();
+    final ahora = DateTime.now().toIso8601String();
 
     for (final paciente in pacientes) {
+      batch.insert('pacientes_local', {
+        'id_paciente': paciente.idPaciente,
 
-      batch.insert(
-        'pacientes_local',
-        {
-          'id_paciente':
-              paciente.idPaciente,
+        'client_id': _uuid.v4(),
 
-          'client_id':
-              _uuid.v4(),
+        'nombres': paciente.nombres,
 
-          'nombres':
-              paciente.nombres,
+        'apellidos': paciente.apellidos,
 
-          'apellidos':
-              paciente.apellidos,
+        'cedula': paciente.cedula,
 
-          'cedula':
-              paciente.cedula,
+        'telefono': paciente.telefono,
 
-          'telefono':
-              paciente.telefono,
+        'correo': paciente.correo,
 
-          'correo':
-              paciente.correo,
+        'direccion': paciente.direccion,
 
-          'sync_status':
-              'synced',
+        'sync_status': 'synced',
 
-          'updated_at_server':
-              null,
+        'updated_at_server': null,
 
-          'cached_at':
-              ahora,
-        },
-      );
+        'cached_at': ahora,
+      });
     }
 
-    await batch.commit(
-      noResult: true,
-    );
+    await batch.commit(noResult: true);
   }
 
-  Future<List<PacienteLocal>>
-      obtenerPacientesLocales() async {
+  Future<List<PacienteLocal>> obtenerPacientesLocales() async {
+    final db = await _localDatabase.database;
 
-    final db =
-        await _localDatabase.database;
+    final resultado = await db.query('pacientes_local', orderBy: 'nombres ASC');
 
-    final resultado =
-        await db.query(
-      'pacientes_local',
-      orderBy: 'nombres ASC',
-    );
-
-    return resultado
-        .map(
-          (map) =>
-              PacienteLocal.fromMap(map),
-        )
-        .toList();
+    return resultado.map((map) => PacienteLocal.fromMap(map)).toList();
   }
 
-  Future<void>
-      guardarPacientePendiente(
-    Paciente paciente,
-  ) async {
+  Future<void> guardarPacientePendiente(Paciente paciente) async {
+    final db = await _localDatabase.database;
 
-    final db =
-        await _localDatabase.database;
+    await db.insert('pacientes_local', {
+      'id_paciente': null,
 
-    await db.insert(
-      'pacientes_local',
-      {
-        'id_paciente': null,
+      'client_id': _uuid.v4(),
 
-        'client_id':
-            _uuid.v4(),
+      'nombres': paciente.nombres,
 
-        'nombres':
-            paciente.nombres,
+      'apellidos': paciente.apellidos,
 
-        'apellidos':
-            paciente.apellidos,
+      'cedula': paciente.cedula,
 
-        'cedula':
-            paciente.cedula,
+      'telefono': paciente.telefono,
 
-        'telefono':
-            paciente.telefono,
+      'correo': paciente.correo,
 
-        'correo':
-            paciente.correo,
+      'direccion': paciente.direccion,
 
-        'sync_status':
-            'pending_create',
+      'sync_status': 'pending_create',
 
-        'updated_at_server':
-            null,
+      'updated_at_server': null,
 
-        'cached_at':
-            DateTime.now()
-                .toIso8601String(),
-      },
-    );
+      'cached_at': DateTime.now().toIso8601String(),
+    });
   }
 
-  Future<DateTime?>
-      obtenerUltimaActualizacion() async {
+  Future<DateTime?> obtenerUltimaActualizacion() async {
+    final db = await _localDatabase.database;
 
-    final db =
-        await _localDatabase.database;
-
-    final resultado =
-        await db.rawQuery('''
+    final resultado = await db.rawQuery('''
       SELECT MAX(cached_at) AS ultima
       FROM pacientes_local
     ''');
 
-    final valor =
-        resultado.first['ultima'];
+    final valor = resultado.first['ultima'];
 
     if (valor == null) {
       return null;
     }
 
-    return DateTime.parse(
-      valor.toString(),
-    );
+    return DateTime.parse(valor.toString());
   }
 }

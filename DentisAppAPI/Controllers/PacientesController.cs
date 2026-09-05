@@ -1,4 +1,5 @@
 using DentisAppAPI.Data;
+using DentisAppAPI.DTOs.Paciente;
 using DentisAppAPI.Helpers;
 using DentisAppAPI.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -176,22 +177,23 @@ namespace DentisAppAPI.Controllers
         /// Registra un nuevo paciente.
         /// </summary>
         [HttpPost]
-        public async Task<IActionResult> PostPaciente(Paciente paciente)
+        public async Task<IActionResult> PostPaciente(PacienteRequest request)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                if (paciente == null)
+                var paciente = new Paciente
                 {
-                    return BadRequest(new ApiError
-                    {
-                        StatusCode = 400,
-                        Timestamp = DateTime.Now,
-                        Message = "Los datos enviados son inválidos."
-                    });
-                }
+                    Nombres = request.Nombres,
+                    Apellidos = request.Apellidos,
+                    Cedula = request.Cedula,
+                    FechaNacimiento = request.FechaNacimiento,
+                    Telefono = request.Telefono,
+                    Correo = request.Correo,
+                    Direccion = request.Direccion
+                };
 
                 bool cedulaExiste = await _context.Pacientes
                     .AnyAsync(p => p.Cedula == paciente.Cedula);
@@ -255,20 +257,12 @@ namespace DentisAppAPI.Controllers
         /// Actualiza la información de un paciente.
         /// </summary>
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutPaciente(int id, Paciente paciente)
+        public async Task<IActionResult> PutPaciente(
+            int id,
+            PacienteRequest request)
         {
             try
             {
-                if (id != paciente.IdPaciente)
-                {
-                    return BadRequest(new ApiError
-                    {
-                        StatusCode = 400,
-                        Timestamp = DateTime.Now,
-                        Message = "El ID enviado no coincide con el paciente."
-                    });
-                }
-
                 var pacienteExistente = await _context.Pacientes
                     .FirstOrDefaultAsync(p => p.IdPaciente == id);
 
@@ -284,7 +278,7 @@ namespace DentisAppAPI.Controllers
 
                 bool cedulaDuplicada = await _context.Pacientes
                     .AnyAsync(p =>
-                        p.Cedula == paciente.Cedula &&
+                        p.Cedula == request.Cedula &&
                         p.IdPaciente != id);
 
                 if (cedulaDuplicada)
@@ -299,7 +293,7 @@ namespace DentisAppAPI.Controllers
 
                 bool correoDuplicado = await _context.Pacientes
                     .AnyAsync(p =>
-                        p.Correo == paciente.Correo &&
+                        p.Correo == request.Correo &&
                         p.IdPaciente != id);
 
                 if (correoDuplicado)
@@ -313,13 +307,13 @@ namespace DentisAppAPI.Controllers
                 }
 
                 // Actualizar únicamente los campos editables
-                pacienteExistente.Nombres = paciente.Nombres;
-                pacienteExistente.Apellidos = paciente.Apellidos;
-                pacienteExistente.Cedula = paciente.Cedula;
-                pacienteExistente.FechaNacimiento = paciente.FechaNacimiento;
-                pacienteExistente.Telefono = paciente.Telefono;
-                pacienteExistente.Correo = paciente.Correo;
-                pacienteExistente.Direccion = paciente.Direccion;
+                pacienteExistente.Nombres = request.Nombres;
+                pacienteExistente.Apellidos = request.Apellidos;
+                pacienteExistente.Cedula = request.Cedula;
+                pacienteExistente.FechaNacimiento = request.FechaNacimiento;
+                pacienteExistente.Telefono = request.Telefono;
+                pacienteExistente.Correo = request.Correo;
+                pacienteExistente.Direccion = request.Direccion;
 
                 await _context.SaveChangesAsync();
 
