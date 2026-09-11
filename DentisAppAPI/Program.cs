@@ -1,5 +1,6 @@
 ﻿using DentisAppAPI.Services;
 using DentisAppAPI.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -51,6 +52,31 @@ builder.Services.AddAuthorization();
 
 // --- 3. REGISTRO DE SERVICIOS ---
 builder.Services.AddControllers();
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(x => x.Value?.Errors.Count > 0)
+            .ToDictionary(
+                x => x.Key,
+                x => x.Value!.Errors
+                    .Select(e => string.IsNullOrWhiteSpace(e.ErrorMessage)
+                        ? "Valor no válido."
+                        : e.ErrorMessage)
+                    .ToArray()
+            );
+
+        return new UnprocessableEntityObjectResult(new
+        {
+            success = false,
+            message = "Se encontraron errores de validación.",
+            errors
+        });
+    };
+});
+
 builder.Services.AddScoped<PacienteService>();
 // Si tienes repositorios, debes registrarlos aquí también. Ejemplo:
 // builder.Services.AddScoped<IPacienteRepository, PacienteRepository>();
@@ -87,11 +113,11 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
         BearerFormat = "JWT",
         In = ParameterLocation.Header,
-        Description = "Introduce tu token JWT en el formato: Bearer {token}"
+        Description = "Introduce tu token JWT."
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
