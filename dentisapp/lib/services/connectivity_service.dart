@@ -6,15 +6,12 @@ class ConnectivityService {
       Connectivity();
 
   Future<bool> tieneConexion() async {
-
     final resultado =
-        await _connectivity
-            .checkConnectivity();
+        await _connectivity.checkConnectivity();
 
     return resultado.any(
       (conexion) =>
-          conexion !=
-          ConnectivityResult.none,
+          conexion != ConnectivityResult.none,
     );
   }
 

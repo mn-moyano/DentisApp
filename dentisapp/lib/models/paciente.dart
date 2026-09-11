@@ -1,4 +1,9 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'paciente.g.dart';
+
 /// Modelo que representa a un paciente dentro del sistema odontológico.
+@JsonSerializable()
 class Paciente {
   final int? idPaciente;
   final String nombres;
@@ -20,60 +25,11 @@ class Paciente {
     this.direccion,
   });
 
-  /// Convierte un objeto Paciente en JSON.
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = {
-      'nombres': nombres,
-      'apellidos': apellidos,
-      'cedula': cedula,
-      'fechaNacimiento': fechaNacimiento?.toIso8601String(),
-      'telefono': telefono,
-      'correo': correo,
-      'direccion': direccion,
-    };
+  factory Paciente.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$PacienteFromJson(json);
 
-    // El ID solamente se envía cuando el paciente ya existe.
-    if (idPaciente != null) {
-      data['idPaciente'] = idPaciente;
-    }
-
-    return data;
-  }
-
-  /// Convierte JSON en objeto Paciente.
-  factory Paciente.fromJson(Map<String, dynamic> json) {
-    return Paciente(
-      idPaciente:
-          json['idPaciente'] ?? json['id_paciente'],
-
-      nombres:
-          json['nombres'] ?? json['nombre'] ?? '',
-
-      apellidos:
-          json['apellidos'] ?? json['apellido'] ?? '',
-
-      cedula:
-          json['cedula'] ?? '',
-
-      fechaNacimiento:
-          json['fechaNacimiento'] != null
-              ? DateTime.tryParse(
-                  json['fechaNacimiento'].toString(),
-                )
-              : (json['fecha_nacimiento'] != null
-                  ? DateTime.tryParse(
-                      json['fecha_nacimiento'].toString(),
-                    )
-                  : null),
-
-      telefono:
-          json['telefono']?.toString(),
-
-      correo:
-          json['correo']?.toString(),
-
-      direccion:
-          json['direccion']?.toString(),
-    );
-  }
+  Map<String, dynamic> toJson() =>
+      _$PacienteToJson(this);
 }

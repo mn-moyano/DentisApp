@@ -1,4 +1,9 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'odontologo.g.dart';
+
 /// Modelo que representa a un odontólogo dentro del sistema.
+@JsonSerializable()
 class Odontologo {
   final int? idOdontologo;
   final String nombres;
@@ -18,32 +23,11 @@ class Odontologo {
     this.estado = 'Activo',
   });
 
-  /// Convierte el objeto a JSON para enviarlo a la API.
-  Map<String, dynamic> toJson() {
-    return {
-      if (idOdontologo != null)
-        'idOdontologo': idOdontologo,
-      'nombres': nombres,
-      'apellidos': apellidos,
-      'especialidad': especialidad,
-      'telefono': telefono,
-      'correo': correo,
-      'estado': estado,
-    };
-  }
-
-  /// Crea un odontólogo a partir de la respuesta de la API.
   factory Odontologo.fromJson(
     Map<String, dynamic> json,
-  ) {
-    return Odontologo(
-      idOdontologo: json['idOdontologo'],
-      nombres: json['nombres'] ?? '',
-      apellidos: json['apellidos'] ?? '',
-      especialidad: json['especialidad'] ?? '',
-      telefono: json['telefono'],
-      correo: json['correo'],
-      estado: json['estado'] ?? 'Activo',
-    );
-  }
+  ) =>
+      _$OdontologoFromJson(json);
+
+  Map<String, dynamic> toJson() =>
+      _$OdontologoToJson(this);
 }

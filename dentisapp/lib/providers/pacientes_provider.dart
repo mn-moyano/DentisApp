@@ -1,47 +1,51 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/paciente.dart';
-import '../services/api_client.dart';
-import '../services/paciente_local_service.dart';
-import '../services/paciente_api_service.dart';
+import '../repositories/paciente_repository.dart';
 
-final pacienteApiServiceProvider = Provider<PacienteApiService>(
-  (ref) => PacienteApiService(),
+final pacienteRepositoryProvider =
+    Provider<PacienteRepository>(
+  (ref) => PacienteRepository(),
 );
 
 final pacientesProvider =
     AsyncNotifierProvider<PacientesNotifier, List<Paciente>>(
-      PacientesNotifier.new,
-    );
+  PacientesNotifier.new,
+);
 
-final pacientesCacheTimestampProvider = StateProvider<DateTime?>((ref) => null);
+final pacientesOfflineProvider =
+    StateProvider<bool>((ref) => false);
 
-class PacientesNotifier extends AsyncNotifier<List<Paciente>> {
-  final PacienteLocalService _localService = PacienteLocalService();
+final pacientesCacheTimestampProvider =
+    StateProvider<DateTime?>((ref) => null);
 
+class PacientesNotifier
+    extends AsyncNotifier<List<Paciente>> {
   @override
   Future<List<Paciente>> build() async {
-    try {
-      final pacientes = await ref
-          .read(pacienteApiServiceProvider)
-          .obtenerPacientes();
-      await _localService.guardarDesdeServidor(pacientes);
-      ref.read(pacientesCacheTimestampProvider.notifier).state = null;
-      return pacientes;
-    } on ApiException catch (error) {
-      if (error.statusCode != 0 && error.statusCode != 408) {
-        rethrow;
-      }
+    final repository = ref.read(
+      pacienteRepositoryProvider,
+    );
 
-      final locales = await _localService.obtenerPacientesLocales();
-      final timestamp = await _localService.obtenerUltimaActualizacion();
-      ref.read(pacientesCacheTimestampProvider.notifier).state = timestamp;
-      return locales.map((paciente) => paciente.toPaciente()).toList();
-    }
+    final resultado =
+        await repository.obtenerPacientesConEstado();
+
+    ref
+        .read(pacientesOfflineProvider.notifier)
+        .state = resultado.offline;
+
+    ref
+        .read(
+          pacientesCacheTimestampProvider.notifier,
+        )
+        .state = resultado.cacheTimestamp;
+
+    return resultado.pacientes;
   }
 
   Future<void> recargar() async {
     state = const AsyncLoading();
+
     state = await AsyncValue.guard(build);
   }
 }
