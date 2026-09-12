@@ -89,9 +89,6 @@ class PacienteRepository {
     );
   }
 
-
-
-
   /// Obtiene pacientes exclusivamente desde SQLite.
   Future<List<Paciente>> _obtenerDesdeLocal() async {
     final locales =
