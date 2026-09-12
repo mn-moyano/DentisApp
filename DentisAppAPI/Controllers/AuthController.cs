@@ -164,7 +164,7 @@ namespace DentisAppAPI.Controllers
 
             // Permite controlar la duración desde appsettings.
             var accessTokenMinutes =
-                jwtSettings.GetValue<int?>("AccessTokenMinutes") ?? 60;
+                jwtSettings.GetValue<int?>("AccessTokenExpirationMinutes") ?? 60;
 
             var token = new JwtSecurityToken(
                 issuer: jwtSettings["Issuer"],

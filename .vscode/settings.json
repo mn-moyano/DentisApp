@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "C:/Users/Rafael Lopez/Documents/Aplicaciones Moviles/DentisApp/dentisapp/linux"
+    "cmake.sourceDirectory": "C:/Users/Rafael Lopez/Documents/Aplicaciones Moviles/DentisApp/dentisapp/linux",
+    "cmake.ignoreCMakeListsMissing": true
 }
