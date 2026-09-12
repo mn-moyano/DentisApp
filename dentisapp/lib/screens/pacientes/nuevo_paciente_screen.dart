@@ -123,17 +123,36 @@ class _NuevoPacienteScreenState
           ),
         );
       }
-    } on ApiException catch (error) {
-      if (!mounted) return;
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error al guardar paciente: $error',
-          ),
-        ),
-      );
-    } finally {
+      } on ApiException catch (error) {
+    if (!mounted) return;
+
+    final errores = error.errors;
+
+    String mensaje = error.message;
+
+    if (errores != null && errores.isNotEmpty) {
+      final mensajesCampos = errores.entries
+          .expand(
+            (entry) => (entry.value as List<dynamic>)
+                .map(
+                  (mensajeCampo) =>
+                      '${entry.key}: $mensajeCampo',
+                ),
+          )
+          .join('\n');
+
+      mensaje = '$mensaje\n$mensajesCampos';
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensaje),
+        duration: const Duration(seconds: 5),
+      ),
+    );
+  }
+     finally {
       if (mounted) {
         setState(() {
           guardando = false;
