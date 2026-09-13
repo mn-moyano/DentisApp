@@ -28,28 +28,30 @@ class PacienteApiService {
     }
   }
 
-  Future<Paciente?> crearPaciente(
-    Paciente paciente,
-  ) async {
-    try {
-      final response = await _dio.post(
-        baseUrl,
-        data: paciente.toJson(),
-      );
+ Future<Paciente?> crearPaciente(
+  Paciente paciente,
+) async {
 
-      final data = response.data as Map<String, dynamic>;
+  try {
+    final response = await _dio.post(
+      baseUrl,
+      data: paciente.toJson(),
+    );
 
-      if (data['data'] == null) {
-        return null;
-      }
+    final data =
+        response.data as Map<String, dynamic>;
 
-      return Paciente.fromJson(
-        data['data'] as Map<String, dynamic>,
-      );
-    } on DioException catch (error) {
-      throw _convertirError(error);
+    if (data['data'] == null) {
+      return null;
     }
+
+    return Paciente.fromJson(
+      data['data'] as Map<String, dynamic>,
+    );
+  } on DioException catch (error) {
+    throw _convertirError(error);
   }
+}
 
   Future<Paciente?> actualizarPaciente(
     Paciente paciente,

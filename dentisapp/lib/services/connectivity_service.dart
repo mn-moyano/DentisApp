@@ -16,16 +16,10 @@ class ConnectivityService {
   }
 
   Stream<bool> get estadoConexion {
-
-    return _connectivity
-        .onConnectivityChanged
-        .map(
-          (resultado) =>
-              resultado.any(
-            (conexion) =>
-                conexion !=
-                ConnectivityResult.none,
-          ),
-        );
+    return _connectivity.onConnectivityChanged.map(
+      (resultado) => resultado.any(
+          (conexion) => conexion != ConnectivityResult.none,
+      ),
+    );
   }
-}
+} 

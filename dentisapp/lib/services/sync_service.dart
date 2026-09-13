@@ -34,8 +34,7 @@ class SyncService {
   /// Inicia la escucha de cambios en la conexión.
   ///
   /// Cuando vuelve la conexión, se intenta sincronizar
-  /// automáticamente la información pendiente y actualizar
-  /// la caché local.
+  /// automáticamente la información pendiente.
   void iniciar() {
     _connectivitySubscription ??=
         _connectivity.estadoConexion.listen((connected) {
@@ -49,27 +48,27 @@ class SyncService {
   }
 
   /// Procesa la sincronización completa.
-  ///
-  /// Primero procesa las operaciones pendientes realizadas
-  /// sin conexión y posteriormente actualiza la caché local
-  /// con los datos disponibles en el servidor.
   Future<void> sincronizar() async {
-    if (_syncing || !await _connectivity.tieneConexion()) {
+    final tieneConexion =
+        await _connectivity.tieneConexion();
+
+    if (_syncing || !tieneConexion) {
       return;
     }
 
     _syncing = true;
 
     try {
-      // 1. Procesar operaciones pendientes.
+      // 1. Obtener operaciones pendientes.
       final operations =
           await _pendingOperations.obtenerPendientes();
 
+      // 2. Procesar operaciones pendientes.
       for (final operation in operations) {
         await _procesar(operation);
       }
 
-      // 2. Actualizar la caché local desde el servidor.
+      // 3. Actualizar la caché local desde el servidor.
       await _actualizarCachePacientes();
     } finally {
       _syncing = false;
@@ -87,8 +86,8 @@ class SyncService {
         pacientes,
       );
     } on ApiException {
-      // Si falla la actualización de la caché, se conserva
-      // la información local existente.
+      // Si falla la actualización de la caché,
+      // se conserva la información local existente.
       return;
     }
   }
@@ -118,6 +117,7 @@ class SyncService {
         await _pendingOperations.eliminar(
           operationId,
         );
+
         return;
       }
 
@@ -167,8 +167,8 @@ class SyncService {
           error.statusCode < 500 &&
           error.statusCode != 408;
 
-      // Si alcanzó el máximo de reintentos o es un error
-      // permanente, dejamos la operación en la cola.
+      // Si es un error permanente, dejamos
+      // la operación en la cola.
       if (errorPermanente) {
         return;
       }
@@ -180,11 +180,10 @@ class SyncService {
       await _pendingOperations.registrarReintento(
         operationId,
         siguienteIntento,
-      );  
+      );
     } on FormatException {
-      // El payload almacenado no tiene un formato JSON válido.
-      // No se reintenta automáticamente porque el problema
-      // está en los datos almacenados.
+      // No se reintenta automáticamente porque
+      // el problema está en los datos almacenados.
       return;
     }
   }
