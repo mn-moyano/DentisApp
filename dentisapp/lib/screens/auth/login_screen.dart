@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../services/auth_service.dart';
+import '../../theme/app_spacing.dart';
 import '../home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() =>
-      _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState
-    extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _usuarioController =
-      TextEditingController();
+  final _usuarioController = TextEditingController();
 
-  final _passwordController =
-      TextEditingController();
+  final _passwordController = TextEditingController();
 
-  final AuthService _authService =
-      AuthService();
+  final AuthService _authService = AuthService();
 
   bool _cargando = false;
 
@@ -47,10 +44,8 @@ class _LoginScreenState
 
     try {
       await _authService.login(
-        username:
-            _usuarioController.text.trim(),
-        password:
-            _passwordController.text,
+        username: _usuarioController.text.trim(),
+        password: _passwordController.text,
       );
 
       if (!mounted) return;
@@ -64,12 +59,10 @@ class _LoginScreenState
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            e.toString()
-                .replaceFirst('Exception: ', ''),
+            e.toString().replaceFirst('Exception: ', ''),
           ),
         ),
       );
@@ -84,53 +77,68 @@ class _LoginScreenState
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(
+              AppSpacing.lg,
+            ),
             child: Form(
               key: _formKey,
               child: Column(
-                mainAxisAlignment:
-                    MainAxisAlignment.center,
                 children: [
-
-                  const Icon(
-                    Icons.local_hospital,
-                    size: 80,
+                  SvgPicture.asset(
+                    'assets/images/logo_dentisapp.svg',
+                    width: 150,
+                    height: 150,
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(
+                    height: AppSpacing.md,
+                  ),
 
-                  const Text(
+                  Text(
                     'DentisApp',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight:
-                          FontWeight.bold,
+                    style: textTheme.displayLarge?.copyWith(
+                      color: colorScheme.primary,
                     ),
                   ),
 
-                  const SizedBox(height: 10),
-
-                  const Text(
-                    'Inicia sesión para continuar',
+                  const SizedBox(
+                    height: AppSpacing.sm,
                   ),
 
-                  const SizedBox(height: 40),
+                  Text(
+                    'Gestión odontológica',
+                    style: textTheme.titleMedium,
+                  ),
+
+                  const SizedBox(
+                    height: AppSpacing.sm,
+                  ),
+
+                  Text(
+                    'Inicia sesión para continuar',
+                    style: textTheme.bodyMedium,
+                  ),
+
+                  const SizedBox(
+                    height: AppSpacing.xl,
+                  ),
 
                   TextFormField(
-                    controller:
-                        _usuarioController,
-                    decoration:
-                        const InputDecoration(
+                    controller: _usuarioController,
+                    decoration: const InputDecoration(
                       labelText: 'Usuario',
-                      border:
-                          OutlineInputBorder(),
-                      prefixIcon:
-                          Icon(Icons.person),
+                      hintText: 'Ingrese su usuario',
+                      prefixIcon: Icon(
+                        Icons.person_outline,
+                      ),
                     ),
                     validator: (value) {
                       if (value == null ||
@@ -142,29 +150,24 @@ class _LoginScreenState
                     },
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(
+                    height: AppSpacing.md,
+                  ),
 
                   TextFormField(
-                    controller:
-                        _passwordController,
-                    obscureText:
-                        _ocultarPassword,
-                    decoration:
-                        InputDecoration(
-                      labelText:
-                          'Contraseña',
-                      border:
-                          const OutlineInputBorder(),
-                      prefixIcon:
-                          const Icon(
-                            Icons.lock,
-                          ),
-                      suffixIcon:
-                          IconButton(
+                    controller: _passwordController,
+                    obscureText: _ocultarPassword,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña',
+                      hintText: 'Ingrese su contraseña',
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                      ),
+                      suffixIcon: IconButton(
                         icon: Icon(
                           _ocultarPassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
                         ),
                         onPressed: () {
                           setState(() {
@@ -175,35 +178,46 @@ class _LoginScreenState
                       ),
                     ),
                     validator: (value) {
-                      if (value == null ||
-                          value.isEmpty) {
-                        return
-                            'Ingrese su contraseña';
+                      if (value == null || value.isEmpty) {
+                        return 'Ingrese su contraseña';
                       }
 
                       return null;
                     },
                   ),
 
-                  const SizedBox(height: 25),
+                  const SizedBox(
+                    height: AppSpacing.lg,
+                  ),
 
                   SizedBox(
                     width: double.infinity,
-                    height: 50,
+                    height: AppSpacing.buttonHeight,
                     child: ElevatedButton(
                       onPressed:
-                          _cargando
-                              ? null
-                              : _iniciarSesion,
-                      child:
-                          _cargando
-                              ? const CircularProgressIndicator()
-                              : const Text(
-                                  'Iniciar sesión',
-                                ),
+                          _cargando ? null : _iniciarSesion,
+                      child: _cargando
+                          ? const SizedBox(
+                              width: AppSpacing.md,
+                              height: AppSpacing.md,
+                              child: CircularProgressIndicator(),
+                            )
+                          : const Text(
+                              'Iniciar sesión',
+                            ),
                     ),
                   ),
 
+                  const SizedBox(
+                    height: AppSpacing.md,
+                  ),
+
+                  Text(
+                    'Si no tiene credenciales, solicítelas '
+                    'en la clínica.',
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyMedium,
+                  ),
                 ],
               ),
             ),

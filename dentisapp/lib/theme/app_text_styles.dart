@@ -8,6 +8,11 @@ import 'package:flutter/material.dart';
 class AppTextStyles {
   AppTextStyles._();
 
+  static const TextStyle display = TextStyle(
+    fontSize: 32,
+    fontWeight: FontWeight.bold,
+  );
+
   static const TextStyle title = TextStyle(
     fontSize: 22,
     fontWeight: FontWeight.bold,

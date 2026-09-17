@@ -2,6 +2,8 @@
 
     <!-- Permite que la aplicación se comunique con la API -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Permite tomar fotografías clínicas con la cámara -->
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:label="dentisapp"

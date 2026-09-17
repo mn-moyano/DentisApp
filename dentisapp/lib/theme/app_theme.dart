@@ -66,6 +66,10 @@ class AppTheme {
       ),
 
       textTheme: TextTheme(
+        displayLarge: AppTextStyles.display.copyWith(
+          color: AppColors.black,
+        ),
+        
         titleLarge: AppTextStyles.title.copyWith(
           color: AppColors.black,
         ),
