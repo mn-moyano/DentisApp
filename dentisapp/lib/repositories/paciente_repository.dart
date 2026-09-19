@@ -3,6 +3,7 @@ import '../services/connectivity_service.dart';
 import '../services/paciente_api_service.dart';
 import '../services/paciente_local_service.dart';
 import '../services/pending_operations_service.dart';
+import '../services/notification_service.dart';
 
 class PacienteRepositoryResult {
   const PacienteRepositoryResult({
@@ -22,16 +23,20 @@ class PacienteRepository {
     PacienteLocalService? local,
     PendingOperationsService? pendingOperations,
     ConnectivityService? connectivity,
+    NotificationService? notificationService,
   })  : _remote = remote ?? PacienteApiService(),
         _local = local ?? PacienteLocalService(),
         _pendingOperations =
             pendingOperations ?? PendingOperationsService(),
-        _connectivity = connectivity ?? ConnectivityService();
+        _connectivity = connectivity ?? ConnectivityService(),
+        _notifications = 
+            notificationService ?? NotificationService.instance;
 
   final PacienteApiService _remote;
   final PacienteLocalService _local;
   final PendingOperationsService _pendingOperations;
   final ConnectivityService _connectivity;
+  final NotificationService _notifications;
 
   /// Obtiene pacientes.
   ///
@@ -127,6 +132,12 @@ class PacienteRepository {
 
     await _pendingOperations.enqueueCreatePaciente(
       paciente,
+    );
+
+    await _notifications.mostrarNotificacion(
+      id: 2,
+      titulo:'DentisApp',
+      mensaje: 'Datos guardados',
     );
 
     return paciente;

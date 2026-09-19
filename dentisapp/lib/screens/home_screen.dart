@@ -8,6 +8,7 @@ import 'citas/citas_screen.dart';
 import 'tratamientos/tratamientos_screen.dart';
 import 'pagos/pagos_screen.dart';
 import 'reportes/reportes_screen.dart';
+import 'notificaciones/notificaciones_screen.dart';
 
 /// Pantalla principal que muestra los módulos principales de DentisApp.
 class HomeScreen extends StatelessWidget {
@@ -120,6 +121,23 @@ class HomeScreen extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (_) => const CitasScreen(),
+                ),
+              );
+            },
+          ),
+
+          ListTile(
+            leading: Icon(
+              Icons.notifications,
+              color: colorScheme.primary,
+            ),
+            title: const Text('Notificaciones'),
+            trailing: const Icon(Icons.arrow_forward_ios),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NotificacionesScreen(),
                 ),
               );
             },

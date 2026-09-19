@@ -8,6 +8,8 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Dentisapp</string>
+	<key>NSCameraUsageDescription</key>
+	<string>DentisApp utiliza la cámara para tomar fotografías clínicas del paciente cuando se solicita.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

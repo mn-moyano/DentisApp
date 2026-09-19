@@ -4,6 +4,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Permite tomar fotografías clínicas con la cámara -->
     <uses-permission android:name="android.permission.CAMERA" />
+     <!-- Permite mostrar notificaciones en Android 13 o superior -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:label="dentisapp"
