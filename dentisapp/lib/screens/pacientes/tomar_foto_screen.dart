@@ -1,12 +1,11 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../services/camera_service.dart';
 
 class TomarFotoScreen extends StatefulWidget {
-  const TomarFotoScreen({
-    super.key,
-  });
+  const TomarFotoScreen({super.key});
 
   @override
   State<TomarFotoScreen> createState() => _TomarFotoScreenState();
@@ -19,6 +18,7 @@ class _TomarFotoScreenState extends State<TomarFotoScreen> {
 
   bool cargando = true;
   String? error;
+  bool permisoBloqueado = false;
 
   Future<bool> _mostrarExplicacionCamara() async {
     final resultado = await showDialog<bool>(
@@ -53,15 +53,19 @@ class _TomarFotoScreenState extends State<TomarFotoScreen> {
 
     return resultado ?? false;
   }
-  
+
   Future<void> _iniciarCamaraConExplicacion() async {
     final continuar = await _mostrarExplicacionCamara();
 
     if (!continuar || !mounted) {
+      if (mounted) {
+        Navigator.pop(context);
+      }
+
       return;
     }
 
-    await _prepararCamara();
+    await _solicitarPermisoYPrepararCamara();
   }
 
   @override
@@ -73,15 +77,100 @@ class _TomarFotoScreenState extends State<TomarFotoScreen> {
     });
   }
 
+  Future<void> _solicitarPermisoYPrepararCamara() async {
+    setState(() {
+      cargando = true;
+      error = null;
+      permisoBloqueado = false;
+    });
+
+    final estado = await Permission.camera.status;
+
+    if (estado.isGranted) {
+      await _prepararCamara();
+      return;
+    }
+
+    if (estado.isPermanentlyDenied) {
+      if (!mounted) return;
+
+      setState(() {
+        cargando = false;
+        error =
+            'El acceso a la cámara está bloqueado. '
+            'Activa el permiso desde los ajustes de la aplicación.';
+        permisoBloqueado = true;
+      });
+
+      return;
+    }
+
+    if (estado.isRestricted) {
+      if (!mounted) return;
+
+      setState(() {
+        cargando = false;
+        error = 'El acceso a la cámara está restringido.';
+      });
+
+      return;
+    }
+
+    final resultado = await Permission.camera.request();
+
+    if (!mounted) return;
+
+    if (resultado.isGranted) {
+      await _prepararCamara();
+      return;
+    }
+
+    if (resultado.isPermanentlyDenied) {
+      setState(() {
+        cargando = false;
+        error =
+            'El acceso a la cámara está bloqueado. '
+            'Activa el permiso desde los ajustes de la aplicación.';
+        permisoBloqueado = true;
+      });
+
+      return;
+    }
+
+    if (resultado.isRestricted) {
+      setState(() {
+        cargando = false;
+        error = 'El acceso a la cámara está restringido.';
+        permisoBloqueado = false;
+      });
+
+      return;
+    }
+
+    setState(() {
+      cargando = false;
+      error =
+          'El acceso a la cámara fue denegado.\n\n'
+          'Para utilizar esta función, habilita el permiso '
+          'desde los ajustes de la aplicación.\n\n'
+          'Ajustes → Permisos → Cámara → '
+          'Permitir al usar la app';
+      permisoBloqueado = true;
+    });
+  }
+
   Future<void> _prepararCamara() async {
     try {
       final camaras = await cameraService.obtenerCamaras();
 
       if (camaras.isEmpty) {
+        if (!mounted) return;
+
         setState(() {
           cargando = false;
           error = 'No hay ninguna cámara disponible.';
         });
+
         return;
       }
 
@@ -98,6 +187,8 @@ class _TomarFotoScreenState extends State<TomarFotoScreen> {
       setState(() {
         controller = nuevoController;
         cargando = false;
+        error = null;
+        permisoBloqueado = false;
       });
     } on CameraException catch (e) {
       if (!mounted) return;
@@ -105,6 +196,8 @@ class _TomarFotoScreenState extends State<TomarFotoScreen> {
       setState(() {
         cargando = false;
         error = _mensajeErrorCamara(e);
+        permisoBloqueado =
+            e.code == 'CameraAccessDeniedWithoutPrompt';
       });
     } catch (e) {
       if (!mounted) return;
@@ -112,6 +205,7 @@ class _TomarFotoScreenState extends State<TomarFotoScreen> {
       setState(() {
         cargando = false;
         error = 'No se pudo iniciar la cámara.';
+        permisoBloqueado = false;
       });
     }
   }
@@ -119,14 +213,35 @@ class _TomarFotoScreenState extends State<TomarFotoScreen> {
   String _mensajeErrorCamara(CameraException e) {
     switch (e.code) {
       case 'CameraAccessDenied':
-        return 'El acceso a la cámara fue denegado.';
+        return 'El acceso a la cámara fue denegado.\n\n'
+            'Para utilizar esta función, habilita el permiso '
+            'desde los ajustes de la aplicación.\n\n'
+            'Ajustes → Permisos → Cámara → '
+            'Permitir al usar la app';
+
       case 'CameraAccessDeniedWithoutPrompt':
-        return 'El acceso a la cámara está bloqueado. '
-            'Actívalo desde los ajustes de la aplicación.';
+        return 'El acceso a la cámara está bloqueado.\n\n'
+            'Activa el permiso desde los ajustes de la aplicación.';
+
       case 'CameraAccessRestricted':
         return 'El acceso a la cámara está restringido.';
+
       default:
         return 'No se pudo acceder a la cámara.';
+    }
+  }
+
+  Future<void> _abrirAjustes() async {
+    final abierto = await openAppSettings();
+
+    if (!abierto && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'No se pudieron abrir los ajustes de la aplicación.',
+          ),
+        ),
+      );
     }
   }
 
@@ -189,9 +304,26 @@ class _TomarFotoScreenState extends State<TomarFotoScreen> {
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
-            child: Text(
-              error!,
-              textAlign: TextAlign.center,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.camera_alt_outlined,
+                  size: 56,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  error!,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                if (permisoBloqueado)
+                  ElevatedButton.icon(
+                    onPressed: _abrirAjustes,
+                    icon: const Icon(Icons.settings),
+                    label: const Text('Abrir ajustes'),
+                  ),
+              ],
             ),
           ),
         ),

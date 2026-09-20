@@ -10,6 +10,8 @@ void main() {
 
   final syncService = SyncService();
 
+  syncService.iniciar();
+
   runApp(
     ProviderScope(
       child: DentisApp(

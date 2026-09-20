@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../models/paciente.dart';
 import '../../repositories/paciente_repository.dart';
 import '../../services/api_client.dart';
+import '../../services/connectivity_service.dart';
 import '../../services/paciente_local_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_date_picker.dart';
@@ -50,6 +52,9 @@ class _NuevoPacienteScreenState
 
   final PacienteLocalService pacienteLocalService =
       PacienteLocalService();
+
+  final ConnectivityService connectivityService =
+      ConnectivityService();
 
   bool guardando = false;
 
@@ -107,6 +112,119 @@ class _NuevoPacienteScreenState
     return archivoGuardado.path;
   }
 
+  Future<bool> _mostrarExplicacionNotificaciones() async {
+    final resultado = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text(
+            'Permiso para notificaciones',
+          ),
+          content: const Text(
+            'DentisApp puede mostrar un aviso cuando '
+            'los datos se guarden correctamente.\n\n'
+            'Las notificaciones son opcionales. Si no '
+            'las habilitas, el paciente se guardará '
+            'normalmente y la aplicación continuará '
+            'funcionando.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, false);
+              },
+              child: const Text('Ahora no'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text('Continuar'),
+            ),
+          ],
+        );
+      },
+    );
+
+    return resultado ?? false;
+  }
+
+  Future<void> _gestionarPermisoNotificaciones() async {
+    final estado = await Permission.notification.status;
+
+    if (estado.isGranted) {
+      return;
+    }
+
+    if (estado.isPermanentlyDenied) {
+      if (!mounted) return;
+
+      await showDialog<void>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text(
+              'Notificaciones bloqueadas',
+            ),
+            content: const Text(
+              'Las notificaciones están bloqueadas '
+              'para DentisApp.\n\n'
+              'Puedes habilitarlas desde los ajustes '
+              'de la aplicación.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('Ahora no'),
+              ),
+              ElevatedButton.icon(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await openAppSettings();
+                },
+                icon: const Icon(Icons.settings),
+                label: const Text('Abrir ajustes'),
+              ),
+            ],
+          );
+        },
+      );
+
+      return;
+    }
+
+    if (estado.isRestricted) {
+      return;
+    }
+
+    await Permission.notification.request();
+  }
+
+  /// Solicita el permiso de notificaciones únicamente
+  /// cuando realmente se utilizará una notificación.
+  Future<void> _prepararNotificacionesSiEsNecesario() async {
+    final tieneConexion =
+        await connectivityService.tieneConexion();
+
+    // Cuando hay conexión, esta pantalla no necesita
+    // mostrar la notificación de "Datos guardados".
+    if (tieneConexion) {
+      return;
+    }
+
+    final continuar =
+        await _mostrarExplicacionNotificaciones();
+
+    if (!continuar || !mounted) {
+      return;
+    }
+
+    await _gestionarPermisoNotificaciones();
+  }
+
   /// Guarda el paciente utilizando el Repository.
   ///
   /// El Repository decide si la operación se realiza
@@ -131,6 +249,16 @@ class _NuevoPacienteScreenState
     });
 
     try {
+      /*
+       * Si el paciente se va a guardar offline,
+       * primero explicamos el uso de notificaciones.
+       *
+       * Esto NO bloquea el guardado:
+       * el paciente se guardará aunque el usuario
+       * rechace el permiso.
+       */
+      await _prepararNotificacionesSiEsNecesario();
+
       DateTime? fechaNacimiento;
 
       if (fechaNacimientoController.text

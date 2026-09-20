@@ -15,11 +15,17 @@ class ConnectivityService {
     );
   }
 
-  Stream<bool> get estadoConexion {
-    return _connectivity.onConnectivityChanged.map(
-      (resultado) => resultado.any(
-          (conexion) => conexion != ConnectivityResult.none,
-      ),
-    );
-  }
-} 
+ Stream<bool> get estadoConexion {
+  return _connectivity.onConnectivityChanged.map(
+    (resultado) {
+      final conectado = resultado.any(
+        (conexion) =>
+            conexion != ConnectivityResult.none,
+      );
+
+      print('🌐 CONECTIVIDAD: $resultado → conectado=$conectado');
+
+      return conectado;
+    },
+  );
+}}
