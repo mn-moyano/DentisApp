@@ -25,7 +25,7 @@ class LocalDatabase {
 
     return await openDatabase(
       path,
-      version: 3,
+      version: 4,
       onCreate: _createDatabase,
       onUpgrade: _upgradeDatabase,
     );
@@ -38,29 +38,18 @@ class LocalDatabase {
     await db.execute('''
       CREATE TABLE pacientes_local (
         id_local INTEGER PRIMARY KEY AUTOINCREMENT,
-
         id_paciente INTEGER,
-
         client_id TEXT NOT NULL UNIQUE,
-
         nombres TEXT NOT NULL,
-
         apellidos TEXT NOT NULL,
-
         cedula TEXT NOT NULL,
-
         fecha_nacimiento TEXT,
-
         telefono TEXT,
-
         correo TEXT,
-
         direccion TEXT,
-
+        foto_path TEXT,
         sync_status TEXT NOT NULL,
-
         updated_at_server TEXT,
-
         cached_at TEXT NOT NULL
       )
     ''');
@@ -68,23 +57,14 @@ class LocalDatabase {
     await db.execute('''
       CREATE TABLE pending_operations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-
         operation_id TEXT NOT NULL UNIQUE,
-
         entity_type TEXT NOT NULL,
-
         entity_client_id TEXT NOT NULL,
-
         operation_type TEXT NOT NULL,
-
         payload TEXT NOT NULL,
-
         retry_count INTEGER DEFAULT 0,
-
         max_retries INTEGER DEFAULT 5,
-
         next_retry_at TEXT,
-
         created_at TEXT NOT NULL
       )
     ''');
@@ -106,6 +86,13 @@ class LocalDatabase {
     if (oldVersion < 3) {
       await db.execute(
         'ALTER TABLE pacientes_local ADD COLUMN fecha_nacimiento TEXT',
+      );
+    }
+
+    // Migración de versión 3 a 4.
+    if (oldVersion < 4) {
+      await db.execute(
+        'ALTER TABLE pacientes_local ADD COLUMN foto_path TEXT',
       );
     }
   }

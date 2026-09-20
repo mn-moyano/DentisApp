@@ -1,11 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 
 import '../../models/paciente.dart';
 import '../../repositories/paciente_repository.dart';
 import '../../services/api_client.dart';
+import '../../services/paciente_local_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_date_picker.dart';
 import '../../widgets/custom_textfield.dart';
+import 'tomar_foto_screen.dart';
 
 /// Pantalla para registrar un nuevo paciente.
 class NuevoPacienteScreen extends StatefulWidget {
@@ -42,7 +48,64 @@ class _NuevoPacienteScreenState
   final PacienteRepository pacienteRepository =
       PacienteRepository();
 
+  final PacienteLocalService pacienteLocalService =
+      PacienteLocalService();
+
   bool guardando = false;
+
+  String? fotoPath;
+
+  Future<void> tomarFotografia() async {
+    final resultado = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const TomarFotoScreen(),
+      ),
+    );
+
+    if (!mounted || resultado == null) {
+      return;
+    }
+
+    setState(() {
+      fotoPath = resultado;
+    });
+  }
+
+  Future<String> guardarFotoLocalmente(
+    String rutaTemporal,
+  ) async {
+    final directorio =
+        await getApplicationDocumentsDirectory();
+
+    final carpetaFotos = Directory(
+      path.join(
+        directorio.path,
+        'pacientes',
+      ),
+    );
+
+    if (!await carpetaFotos.exists()) {
+      await carpetaFotos.create(
+        recursive: true,
+      );
+    }
+
+    final nombreArchivo =
+        'paciente_${DateTime.now().millisecondsSinceEpoch}.jpg';
+
+    final destino = path.join(
+      carpetaFotos.path,
+      nombreArchivo,
+    );
+
+    final archivoOriginal = File(rutaTemporal);
+
+    final archivoGuardado =
+        await archivoOriginal.copy(destino);
+
+    return archivoGuardado.path;
+  }
 
   /// Guarda el paciente utilizando el Repository.
   ///
@@ -102,7 +165,21 @@ class _NuevoPacienteScreenState
         paciente,
       );
 
-      if (!mounted) return;
+      if (pacienteCreado != null &&
+          fotoPath != null) {
+        final fotoLocal =
+            await guardarFotoLocalmente(fotoPath!);
+
+        await pacienteLocalService
+            .guardarFotoPorCedula(
+          cedula: paciente.cedula,
+          fotoPath: fotoLocal,
+        );
+      }
+
+      if (!mounted) {
+        return;
+      }
 
       if (pacienteCreado != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -123,36 +200,36 @@ class _NuevoPacienteScreenState
           ),
         );
       }
+    } on ApiException catch (error) {
+      if (!mounted) {
+        return;
+      }
 
-      } on ApiException catch (error) {
-    if (!mounted) return;
+      final errores = error.errors;
 
-    final errores = error.errors;
+      String mensaje = error.message;
 
-    String mensaje = error.message;
+      if (errores != null && errores.isNotEmpty) {
+        final mensajesCampos = errores.entries
+            .expand(
+              (entry) => (entry.value as List<dynamic>)
+                  .map(
+                    (mensajeCampo) =>
+                        '${entry.key}: $mensajeCampo',
+                  ),
+            )
+            .join('\n');
 
-    if (errores != null && errores.isNotEmpty) {
-      final mensajesCampos = errores.entries
-          .expand(
-            (entry) => (entry.value as List<dynamic>)
-                .map(
-                  (mensajeCampo) =>
-                      '${entry.key}: $mensajeCampo',
-                ),
-          )
-          .join('\n');
+        mensaje = '$mensaje\n$mensajesCampos';
+      }
 
-      mensaje = '$mensaje\n$mensajesCampos';
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(mensaje),
-        duration: const Duration(seconds: 5),
-      ),
-    );
-  }
-     finally {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(mensaje),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    } finally {
       if (mounted) {
         setState(() {
           guardando = false;
@@ -184,6 +261,56 @@ class _NuevoPacienteScreenState
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
+            Center(
+              child: Column(
+                children: [
+                  Container(
+                    width: 140,
+                    height: 140,
+                    decoration: BoxDecoration(
+                      borderRadius:
+                          BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .outline,
+                      ),
+                    ),
+                    child: fotoPath == null
+                        ? const Icon(
+                            Icons.person,
+                            size: 70,
+                          )
+                        : ClipRRect(
+                            borderRadius:
+                                BorderRadius.circular(12),
+                            child: Image.file(
+                              File(fotoPath!),
+                              width: 140,
+                              height: 140,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed:
+                        guardando
+                            ? null
+                            : tomarFotografia,
+                    icon: const Icon(
+                      Icons.camera_alt,
+                    ),
+                    label: Text(
+                      fotoPath == null
+                          ? 'Tomar fotografía'
+                          : 'Tomar otra fotografía',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
             CustomTextField(
               controller: nombreController,
               label: 'Nombres',

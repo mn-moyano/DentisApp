@@ -12,8 +12,10 @@ import '../models/paciente_local.dart';
 /// - Consultar pacientes sin conexión.
 /// - Mantener el estado de sincronización.
 /// - Obtener la fecha de la última actualización.
+/// - Asociar fotografías almacenadas localmente.
 class PacienteLocalService {
-  final LocalDatabase _localDatabase = LocalDatabase.instance;
+  final LocalDatabase _localDatabase =
+      LocalDatabase.instance;
 
   final Uuid _uuid = const Uuid();
 
@@ -24,6 +26,9 @@ class PacienteLocalService {
   ///
   /// Los pacientes que tengan operaciones pendientes no son
   /// sobrescritos para evitar perder cambios realizados offline.
+  ///
+  /// La fotografía local no se modifica cuando se actualizan
+  /// los datos provenientes del servidor.
   Future<void> guardarDesdeServidor(
     List<Paciente> pacientes,
   ) async {
@@ -31,7 +36,8 @@ class PacienteLocalService {
 
     final batch = db.batch();
 
-    final ahora = DateTime.now().toUtc().toIso8601String();
+    final ahora =
+        DateTime.now().toUtc().toIso8601String();
 
     for (final paciente in pacientes) {
       final existente = await db.query(
@@ -56,7 +62,8 @@ class PacienteLocalService {
               'apellidos': paciente.apellidos,
               'cedula': paciente.cedula,
               'fecha_nacimiento':
-                  paciente.fechaNacimiento?.toIso8601String(),
+                  paciente.fechaNacimiento
+                      ?.toIso8601String(),
               'telefono': paciente.telefono,
               'correo': paciente.correo,
               'direccion': paciente.direccion,
@@ -78,10 +85,12 @@ class PacienteLocalService {
             'apellidos': paciente.apellidos,
             'cedula': paciente.cedula,
             'fecha_nacimiento':
-                paciente.fechaNacimiento?.toIso8601String(),
+                paciente.fechaNacimiento
+                    ?.toIso8601String(),
             'telefono': paciente.telefono,
             'correo': paciente.correo,
             'direccion': paciente.direccion,
+            'foto_path': null,
             'sync_status': 'synced',
             'updated_at_server': null,
             'cached_at': ahora,
@@ -125,7 +134,8 @@ class PacienteLocalService {
 
     final valores = <String, dynamic>{
       'sync_status': syncStatus,
-      'cached_at': DateTime.now().toUtc().toIso8601String(),
+      'cached_at':
+          DateTime.now().toUtc().toIso8601String(),
     };
 
     if (idPaciente != null) {
@@ -205,13 +215,17 @@ class PacienteLocalService {
         'apellidos': paciente.apellidos,
         'cedula': paciente.cedula,
         'fecha_nacimiento':
-            paciente.fechaNacimiento?.toIso8601String(),
+            paciente.fechaNacimiento
+                ?.toIso8601String(),
         'telefono': paciente.telefono,
         'correo': paciente.correo,
         'direccion': paciente.direccion,
+        'foto_path': paciente.fotoPath,
         'sync_status': paciente.syncStatus,
         'updated_at_server':
-            paciente.updatedAtServer?.toUtc().toIso8601String(),
+            paciente.updatedAtServer
+                ?.toUtc()
+                .toIso8601String(),
         'cached_at':
             DateTime.now().toUtc().toIso8601String(),
       },
@@ -259,10 +273,6 @@ class PacienteLocalService {
 
   /// Obtiene la fecha de la última actualización
   /// de la caché local.
-  ///
-  /// Esta fecha puede utilizarse en la interfaz para mostrar:
-  ///
-  /// "Datos actualizados hace X minutos".
   Future<DateTime?> obtenerUltimaActualizacion() async {
     final db = await _localDatabase.database;
 
@@ -284,6 +294,25 @@ class PacienteLocalService {
     return DateTime.tryParse(
       valor.toString(),
     )?.toLocal();
+  }
+
+  /// Guarda la ruta de la fotografía asociada a un paciente local.
+  Future<void> guardarFotoPorCedula({
+    required String cedula,
+    required String fotoPath,
+  }) async {
+    final db = await _localDatabase.database;
+
+    await db.update(
+      _table,
+      {
+        'foto_path': fotoPath,
+        'cached_at':
+            DateTime.now().toUtc().toIso8601String(),
+      },
+      where: 'cedula = ?',
+      whereArgs: [cedula],
+    );
   }
 
   /// Elimina todos los pacientes locales.

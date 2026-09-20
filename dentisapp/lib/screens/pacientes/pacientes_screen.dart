@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,11 +16,14 @@ class PacientesScreen extends ConsumerStatefulWidget {
   const PacientesScreen({super.key});
 
   @override
-  ConsumerState<PacientesScreen> createState() => _PacientesScreenState();
+  ConsumerState<PacientesScreen> createState() =>
+      _PacientesScreenState();
 }
 
-class _PacientesScreenState extends ConsumerState<PacientesScreen> {
-  final TextEditingController buscarController = TextEditingController();
+class _PacientesScreenState
+    extends ConsumerState<PacientesScreen> {
+  final TextEditingController buscarController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -30,8 +35,11 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
   }
 
   List<Paciente> get pacientesFiltrados {
-    final texto = buscarController.text.trim().toLowerCase();
-    final pacientes = ref.read(pacientesProvider).valueOrNull ?? [];
+    final texto =
+        buscarController.text.trim().toLowerCase();
+
+    final pacientes =
+        ref.read(pacientesProvider).valueOrNull ?? [];
 
     if (texto.isEmpty) {
       return pacientes;
@@ -39,13 +47,17 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
 
     return pacientes.where((paciente) {
       final nombre =
-          '${paciente.nombres} ${paciente.apellidos}'.toLowerCase();
+          '${paciente.nombres} ${paciente.apellidos}'
+              .toLowerCase();
 
-      final cedula = paciente.cedula.toLowerCase();
+      final cedula =
+          paciente.cedula.toLowerCase();
 
-      final telefono = (paciente.telefono ?? '').toLowerCase();
+      final telefono =
+          (paciente.telefono ?? '').toLowerCase();
 
-      final correo = (paciente.correo ?? '').toLowerCase();
+      final correo =
+          (paciente.correo ?? '').toLowerCase();
 
       return nombre.contains(texto) ||
           cedula.contains(texto) ||
@@ -62,14 +74,16 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final pacientesState = ref.watch(pacientesProvider);
-    final cacheTimestamp = ref.watch(pacientesCacheTimestampProvider);
+    final pacientesState =
+        ref.watch(pacientesProvider);
 
+    final cacheTimestamp =
+        ref.watch(pacientesCacheTimestampProvider);
+        
     return Scaffold(
       appBar: AppBar(
         title: const Text('Pacientes'),
       ),
-
       body: Column(
         children: [
           CustomSearchBar(
@@ -77,11 +91,17 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
             hint: 'Buscar paciente...',
           ),
 
-          // Indicador de antigüedad de los datos cuando se trabaja offline.
+          // Indicador de antigüedad de los datos cuando
+          // se trabaja offline.
           if (cacheTimestamp != null)
             Container(
               width: double.infinity,
-              margin: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              margin: const EdgeInsets.fromLTRB(
+                16,
+                0,
+                16,
+                8,
+              ),
               padding: const EdgeInsets.symmetric(
                 horizontal: 12,
                 vertical: 8,
@@ -90,7 +110,8 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
                 color: Theme.of(context)
                     .colorScheme
                     .primaryContainer,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius:
+                    BorderRadius.circular(10),
               ),
               child: Row(
                 children: [
@@ -113,7 +134,8 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
                             color: Theme.of(context)
                                 .colorScheme
                                 .onPrimaryContainer,
-                            fontWeight: FontWeight.w500,
+                            fontWeight:
+                                FontWeight.w500,
                           ),
                     ),
                   ),
@@ -123,7 +145,8 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
 
           Expanded(
             child: AsyncStateView(
-              isLoading: pacientesState.isLoading,
+              isLoading:
+                  pacientesState.isLoading,
               error: pacientesState.hasError
                   ? 'No se pudieron cargar los pacientes.\n\n'
                       '${pacientesState.error}'
@@ -132,28 +155,37 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
                   !pacientesState.isLoading &&
                   !pacientesState.hasError &&
                   pacientesFiltrados.isEmpty,
-              onRetry: () =>
-                  ref.read(pacientesProvider.notifier).recargar(),
+              onRetry: () => ref
+                  .read(
+                    pacientesProvider.notifier,
+                  )
+                  .recargar(),
               child: RefreshIndicator(
-                onRefresh: () =>
-                    ref.read(pacientesProvider.notifier).recargar(),
+                onRefresh: () => ref
+                    .read(
+                      pacientesProvider.notifier,
+                    )
+                    .recargar(),
                 child: construirLista(),
               ),
             ),
           ),
         ],
       ),
-
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton:
+          FloatingActionButton(
         onPressed: () async {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => NuevoPacienteScreen(),
+              builder: (_) =>
+                  const NuevoPacienteScreen(),
             ),
           );
 
-          ref.read(pacientesProvider.notifier).recargar();
+          ref
+              .read(pacientesProvider.notifier)
+              .recargar();
         },
         child: const Icon(Icons.add),
       ),
@@ -161,7 +193,8 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
   }
 
   String _formatAge(DateTime timestamp) {
-    final age = DateTime.now().difference(timestamp);
+    final age =
+        DateTime.now().difference(timestamp);
 
     if (age.inMinutes < 1) {
       return 'menos de un minuto';
@@ -178,8 +211,55 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
     return '${age.inDays} días';
   }
 
+  /// Construye el avatar del paciente.
+  ///
+  /// Si existe una fotografía almacenada localmente,
+  /// se muestra la fotografía. De lo contrario,
+  /// se muestra la inicial del nombre.
+  Widget _construirAvatarPaciente(
+    BuildContext context,
+    Paciente paciente,
+    String? fotoPath,
+  ) {
+    final tieneFoto =
+        fotoPath != null &&
+        fotoPath.trim().isNotEmpty;
+
+    if (tieneFoto) {
+      final archivo = File(fotoPath);
+
+      if (archivo.existsSync()) {
+        return CircleAvatar(
+          radius: 28,
+          backgroundImage: FileImage(archivo),
+        );
+      }
+    }
+
+    return CircleAvatar(
+      radius: 28,
+      backgroundColor: Theme.of(context)
+          .colorScheme
+          .primaryContainer,
+      foregroundColor: Theme.of(context)
+          .colorScheme
+          .onPrimaryContainer,
+      child: Text(
+        paciente.nombres.isNotEmpty
+            ? paciente.nombres[0].toUpperCase()
+            : '?',
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
   Widget construirLista() {
     final lista = pacientesFiltrados;
+    
+    final pacientesFotos =
+        ref.watch(pacientesFotosProvider);
 
     if (lista.isEmpty) {
       return const Center(
@@ -191,7 +271,8 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
     }
 
     return ListView.builder(
-      physics: const AlwaysScrollableScrollPhysics(),
+      physics:
+          const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(
         top: 8,
         bottom: 80,
@@ -202,16 +283,12 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
 
         return CustomCard(
           child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor:
-                  Theme.of(context).colorScheme.primaryContainer,
-              foregroundColor:
-                  Theme.of(context).colorScheme.onPrimaryContainer,
-              child: Text(
-                paciente.nombres.isNotEmpty
-                    ? paciente.nombres[0].toUpperCase()
-                    : '?',
-              ),
+            leading:
+                _construirAvatarPaciente(
+              context,
+              paciente,
+              pacientesFotos[
+                  paciente.cedula],
             ),
 
             title: Text(
@@ -231,7 +308,9 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
 
             trailing: Icon(
               Icons.arrow_forward_ios,
-              color: Theme.of(context).colorScheme.primary,
+              color: Theme.of(context)
+                  .colorScheme
+                  .primary,
             ),
 
             onTap: () async {
@@ -239,11 +318,17 @@ class _PacientesScreenState extends ConsumerState<PacientesScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (_) =>
-                      EditarPacienteScreen(paciente: paciente),
+                      EditarPacienteScreen(
+                    paciente: paciente,
+                  ),
                 ),
               );
 
-              ref.read(pacientesProvider.notifier).recargar();
+              ref
+                  .read(
+                    pacientesProvider.notifier,
+                  )
+                  .recargar();
             },
           ),
         );

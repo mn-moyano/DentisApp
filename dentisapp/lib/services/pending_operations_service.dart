@@ -53,6 +53,7 @@ class PendingOperationsService {
           'telefono': paciente.telefono,
           'correo': paciente.correo,
           'direccion': paciente.direccion,
+          'foto_path': null,
           'sync_status': 'pending_create',
           'updated_at_server': null,
           'cached_at': ahora,

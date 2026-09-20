@@ -21,6 +21,8 @@ class PacienteLocal {
 
   final String? direccion;
 
+  final String? fotoPath;
+
   final String syncStatus;
 
   final DateTime cachedAt;
@@ -38,6 +40,7 @@ class PacienteLocal {
     this.telefono,
     this.correo,
     this.direccion,
+    this.fotoPath,
     required this.syncStatus,
     required this.cachedAt,
     this.updatedAtServer,
@@ -59,6 +62,7 @@ class PacienteLocal {
       telefono: map['telefono'],
       correo: map['correo'],
       direccion: map['direccion'],
+      fotoPath: map['foto_path'],
       syncStatus: map['sync_status'],
       cachedAt: DateTime.parse(
         map['cached_at'].toString(),
@@ -83,6 +87,7 @@ class PacienteLocal {
       'telefono': telefono,
       'correo': correo,
       'direccion': direccion,
+      'foto_path': fotoPath,
       'sync_status': syncStatus,
       'cached_at': cachedAt.toIso8601String(),
       'updated_at_server': updatedAtServer?.toIso8601String(),

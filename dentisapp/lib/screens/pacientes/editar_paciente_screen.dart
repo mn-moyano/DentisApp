@@ -5,7 +5,6 @@ import '../../services/paciente_api_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_date_picker.dart';
 import '../../widgets/custom_textfield.dart';
-import 'tomar_foto_screen.dart';
 
 /// Pantalla para editar un paciente existente.
 class EditarPacienteScreen extends StatefulWidget {
@@ -112,25 +111,17 @@ class _EditarPacienteScreenState
       }
 
       final pacienteActualizado = Paciente(
-        // Mantener el ID original.
         idPaciente: widget.paciente.idPaciente,
-
         nombres: nombreController.text.trim(),
-
         apellidos: apellidoController.text.trim(),
-
         cedula: cedulaController.text.trim(),
-
         fechaNacimiento: fechaNacimiento,
-
         telefono: telefonoController.text.trim().isEmpty
             ? null
             : telefonoController.text.trim(),
-
         correo: correoController.text.trim().isEmpty
             ? null
             : correoController.text.trim(),
-
         direccion: direccionController.text.trim().isEmpty
             ? null
             : direccionController.text.trim(),
@@ -181,27 +172,6 @@ class _EditarPacienteScreenState
     }
   }
 
-  Future<void> _abrirCamara() async {
-    final fotoPath = await Navigator.push<String>(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const TomarFotoScreen(),
-      ),
-    );
-
-    if (!mounted || fotoPath == null) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Fotografía tomada correctamente.',
-        ),
-      ),
-    );
-  }
-
   @override
   void dispose() {
     nombreController.dispose();
@@ -221,10 +191,8 @@ class _EditarPacienteScreenState
       appBar: AppBar(
         title: const Text('Editar Paciente'),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16),
-
         child: ListView(
           children: [
             TextFormField(
@@ -278,16 +246,6 @@ class _EditarPacienteScreenState
             ),
 
             const SizedBox(height: 20),
-
-            CustomButton(
-              texto: 'Tomar fotografía clínica',
-              icono: Icons.camera_alt,
-              onPressed: guardando
-                  ? null
-                  : _abrirCamara,
-            ),
-
-            const SizedBox(height: 12),
 
             CustomButton(
               texto: guardando
