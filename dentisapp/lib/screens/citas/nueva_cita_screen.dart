@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../models/cita.dart';
 import '../../services/cita_api_service.dart';
-import '../../widgets/custom_button.dart';
 import '../../widgets/custom_textfield.dart';
+import '../../widgets/botones_nativos.dart'; // <-- Tus botones con los 4 estados y degradación
 
 class NuevaCitaScreen extends StatefulWidget {
   const NuevaCitaScreen({super.key});
@@ -94,8 +94,6 @@ class _NuevaCitaScreenState
     }
 
     try {
-      // Por ahora el campo de fecha se encuentra
-      // en formato DD/MM/YYYY HH:mm.
       final partes =
           fechaHoraController.text.split(' ');
 
@@ -242,10 +240,27 @@ class _NuevaCitaScreenState
 
             const SizedBox(height: 20),
 
-            CustomButton(
-              texto: 'Guardar Cita',
-              icono: Icons.save,
-              onPressed: guardarCita,
+            // ==========================================
+            // Funcionalidad Nativa 1: Cámara con Permisos
+            // ==========================================
+            BotonCamaraPermisos(
+              onPermisoConcedido: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Acceso a cámara concedido (Evidencia de taller).'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              },
+            ),
+
+            const SizedBox(height: 12),
+
+            // ==========================================
+            // Funcionalidad Nativa 2: Notificaciones y Guardado
+            // ==========================================
+            BotonGuardarConNotificacion(
+              onGuardarPaciente: guardarCita,
             ),
           ],
         ),
